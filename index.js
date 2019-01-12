@@ -14,7 +14,7 @@ let API = require('./routes/api');
 let app = express();
 
 // defining port number
-const PORT = process.env.PORT || 85;
+const PORT = process.env.PORT || 80;
 
 // for logging perpurse
 app.use(logger('dev'));
@@ -31,7 +31,15 @@ app.set('views', path.join(__dirname, 'views'));
 // view engine setup
 app.set('view engine', 'ejs');
 
-// setting for routes
+/* config MIME type  */
+
+// parse application/json
+// app.use(express.json({ type: 'text/html' }));
+
+// parse application/x-www-form-urlencoded
+// app.use(express.urlencoded({ extended: false }));
+
+// set up  for routes
 app.use('/api', API);
 app.use('/', MAIN);
 

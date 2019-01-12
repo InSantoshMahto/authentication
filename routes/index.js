@@ -16,14 +16,59 @@ routes.use(function(req, res, next) {
     next();
 });
 
-/* ============================ view routes ================================ */
-
-/* ---------------------------- Registration  --------------------------------*/
+/* ============================ Config routes ================================ */
+/* ---------------------------- dashboard  --------------------------------*/
 // dashboard
-routes.get('/', (req, res) => {
-    res.send("Dashboard");
+routes.post('/', (req, res) => {
+    res.send("<h1>Dashboard</h1>");
 });
 
+/* ---------------------------- Registration  --------------------------------*/
+// register
+routes.post('/register', (req, res) => {
+    res.send("register");
+});
+
+// registration OTP verification
+routes.post('/regOtpVerification', (req, res) => {
+    res.send("regOtpVerification");
+});
+
+/* ---------------------------- Login  --------------------------------*/
+// login 
+routes.post('/login', (req, res) => {
+    res.send("login");
+});
+
+// login OTP verification
+routes.post('/logOtpVerification', (req, res) => {
+    res.send('logOtpVerification');
+});
+
+/* ---------------------------- Forget Password  --------------------------------*/
+// forget password interface for getting user details forgetPasswordGetUserDetails
+routes.post('/forPasGetUseDetails', (req, res) => {
+    res.send("forPasGetUseDetails");
+});
+
+// forget password OTP verification
+routes.post('/forPasOtpVerification', (req, res) => {
+    res.send("forPasOtpVerification");
+});
+
+// forget password interface for changing the user password forgetPasswordChangePassword
+routes.post('/forPasChaPassword', (req, res) => {
+    res.send("forPasChaPassword");
+});
+
+
+/* ============================ view routes ================================ */
+// dashboard
+routes.get('/', (req, res) => {
+    res.send("<h1>Dashboard</h1>");
+});
+
+/* ---------------------------- Registration  --------------------------------*/
 // register
 routes.get('/register', (req, res) => {
     res.send("register");
@@ -35,7 +80,6 @@ routes.get('/regOtpVerification', (req, res) => {
 });
 
 /* ---------------------------- Login  --------------------------------*/
-
 // login 
 routes.get('/login', (req, res) => {
     res.send("login");
@@ -47,7 +91,6 @@ routes.get('/logOtpVerification', (req, res) => {
 });
 
 /* ---------------------------- Forget Password  --------------------------------*/
-
 // forget password interface for getting user details forgetPasswordGetUserDetails
 routes.get('/forPasGetUseDetails', (req, res) => {
     res.send("forPasGetUseDetails");
@@ -63,10 +106,7 @@ routes.get('/forPasChaPassword', (req, res) => {
     res.send("forPasChaPassword");
 });
 
-/* ---------------------------- dashboard  --------------------------------*/
-
 /* ---------------------------- Error  --------------------------------*/
-
 // error 404
 routes.get('/*', (req, res) => {
     res.send("Error 404");

@@ -4,13 +4,15 @@ module.exports = {
         port: "3306",
         user: "root",
         password: "",
-        database: "central"
+        database: "auth",
+        status: "ok"
     },
     psql: {
         host: "localhost",
         port: "5432",
         user: "root",
         password: "",
-        database: "auth"
+        database: "auth",
+        status: "ok"
     }
 }

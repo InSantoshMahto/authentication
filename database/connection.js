@@ -8,11 +8,11 @@ let config = require("./config");
 module.exports = {
     mysql: () => {
         return mysql.createConnection({
-            host: config.host,
-            port: config.port,
-            user: config.user,
-            password: config.password,
-            database: config.database
+            host: config.mysql.host,
+            port: config.mysql.port,
+            user: config.mysql.user,
+            password: config.mysql.password,
+            database: config.mysql.database
         })
     },
     psql: {

@@ -18,18 +18,9 @@ conn.connect((err) => {
     console.log('connected as id ' + conn.threadId);
 });
 
-const { Client } = require('pg');
-const client = new Client();
-
-await client.connect();
-
-const res = await client.query('SELECT $1::text as message', ['Hello world!'])
-console.log(res.rows[0].message) // Hello world!
-await client.end()
-
-// conn.query('SELECT * FROM records;', function(error, results, fields) {
-//     if (error) throw error;
-//     console.log('The solution is: ', results[0].solution);
-// });
+conn.query('SELECT * FROM test;', function(error, results, fields) {
+    if (error) throw error;
+    console.log('The solution is: ', results[0]);
+});
 
 conn.end();
