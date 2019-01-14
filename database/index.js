@@ -1,26 +1,24 @@
 // importing node modules
 const mysql = require('mysql');
 
-// importing database connection 
-let connection = require("./connection");
+// importing database configurations
+let config = require("./config");
 
-// selecting mysql db
-let conn = connection.mysql();
+// importing functionalities
+let auth = require('./auth');
 
-// connecting to db
-conn.connect((err) => {
+// getting mysql database access as a conToMySql i.e, connectionForMySql 
+let conToMySql = config.mysql();
 
-    if (err) {
-        console.error('error connecting: ' + err.stack);
-        return;
+// export
+module.exports = {
+    getConnection: {
+        mysql: conToMySql
+    },
+    auth: {
+        dashboard: auth.dashboard,
+        register: auth.register,
+        login: auth.login,
+        forPassword: auth.forPassword
     }
-
-    console.log('connected as id ' + conn.threadId);
-});
-
-conn.query('SELECT * FROM test;', function(error, results, fields) {
-    if (error) throw error;
-    console.log('The solution is: ', results[0]);
-});
-
-conn.end();
+}

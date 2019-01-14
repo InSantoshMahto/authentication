@@ -14,5 +14,8 @@ module.exports = {
         password: "",
         database: "auth",
         status: "ok"
+    },
+    mongo: {
+        status: "ok"
     }
 }

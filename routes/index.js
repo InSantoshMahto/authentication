@@ -20,6 +20,7 @@ routes.use(function(req, res, next) {
 /* ---------------------------- dashboard  --------------------------------*/
 // dashboard
 routes.post('/', (req, res) => {
+    // console.log(req.body.name);
     res.send("<h1>Dashboard</h1>");
 });
 

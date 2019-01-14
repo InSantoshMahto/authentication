@@ -2,7 +2,7 @@
 const mysql = require('mysql');
 
 // importing configuration module
-let config = require("./config");
+let config = require("./credentials");
 
 // exporting connections
 module.exports = {
@@ -17,5 +17,8 @@ module.exports = {
     },
     psql: {
         status: "i am fine"
+    },
+    mongodb: {
+        status: "i am fine mongodb"
     }
 };
