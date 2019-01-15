@@ -3,5 +3,7 @@ let connections = require('./connections');
 let credentials = require('./credentials');
 
 // exporting functionalities
-module.exports = credentials;
-module.exports = connections;
+module.exports = {
+    connections: connections,
+    credentials: credentials
+}

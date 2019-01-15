@@ -2,17 +2,17 @@
 const mysql = require('mysql');
 
 // importing configuration module
-let config = require("./credentials");
+let credentials = require("./credentials");
 
 // exporting connections
 module.exports = {
     mysql: () => {
         return mysql.createConnection({
-            host: config.mysql.host,
-            port: config.mysql.port,
-            user: config.mysql.user,
-            password: config.mysql.password,
-            database: config.mysql.database
+            host: credentials.mysql.host,
+            port: credentials.mysql.port,
+            user: credentials.mysql.user,
+            password: credentials.mysql.password,
+            database: credentials.mysql.database
         })
     },
     psql: {
