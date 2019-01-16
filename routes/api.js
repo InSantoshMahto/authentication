@@ -9,6 +9,7 @@ let dashboard = auth.dashboard;
 let register = auth.register;
 let login = auth.login;
 let forPassword = auth.forPassword;
+let logout = auth.logout;
 
 // creating router objects
 const routes = express.Router();
@@ -35,24 +36,28 @@ routes.post('/', dashboard.dashboard);
 routes.post('/register', register.register);
 
 // registration OTP verification
-routes.post('/regOtpVerification', register.otpVerification);
+routes.post('/regOtpVerification', register.verification);
 
 /* ---------------------------- Login  --------------------------------*/
 // login 
 routes.post('/login', login.login);
 
 // login OTP verification
-routes.post('/logOtpVerification', login.otpVerification);
+routes.post('/logOtpVerification', login.verification);
 
 /* ---------------------------- Forget Password  --------------------------------*/
 // forget password interface for getting user details forgetPasswordGetUserDetails
 routes.post('/forPasGetUseDetails', forPassword.getUseDetails);
 
 // forget password OTP verification
-// routes.post('/forPasOtpVerification', forPassword.otpVerification);
+routes.post('/forPasOtpVerification', forPassword.verification);
 
 // forget password interface for changing the user password forgetPasswordChangePassword
-// routes.post('/forPasChaPassword', forPassword.chaPassword);
+routes.post('/forPasChaPassword', forPassword.chaPassword);
+
+/* ---------------------------- LogOut  --------------------------------*/
+// logOut
+routes.post('/logut', logout);
 
 /* ============================ view routes ================================ */
 // dashboard

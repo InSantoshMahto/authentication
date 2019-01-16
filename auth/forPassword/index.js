@@ -2,7 +2,7 @@ let getUseDetails = (req, res) => {
     console.log("i am from forget password getUseDetails from auth");
     res.send('getUseDetails');
 }
-let otpVerification = (req, res) => {
+let verification = (req, res) => {
     console.log("i am from forget password otpVerification  from auth");
     res.send('otpVerification');
 }
@@ -12,6 +12,6 @@ let chaPassword = (req, res) => {
 }
 module.exports = {
     getUseDetails: getUseDetails,
-    otpVerification: otpVerification,
+    verification: verification,
     chaPassword: chaPassword
 };
