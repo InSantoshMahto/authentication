@@ -166,7 +166,8 @@ let register = (req, res) => {
                             }, {
                                 algorithm: 'md5'
                             });
-                            console.info(userData.hash);
+
+                            // console.info(userData.hash);
                             // preparing insert query
                             let query = "INSERT INTO users (id, user_name, email, mobile, first_name, middle_name, last_name, gender, dob, dor, last_login, pwd_hash, hash, email_status, mobile_status, account_status, remark ) VALUES(" + null + ",'" + userData.userName + "','" + userData.email + "','" + userData.mobile + "','" + userData.firstName + "','" + userData.middleName + "','" + userData.lastName + "','" + userData.gender + "','" + userData.dob + "','" + userData.dor + "','" + userData.lastLogin + "','" + userData.pwdHash + "','" + userData.hash + "'," + userData.emailStatus + "," + userData.mobileStatus + "," + userData.accountStatus + ",'" + userData.remark + "');";
                             // console.info(query);

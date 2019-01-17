@@ -4,15 +4,13 @@ const express = require('express');
 // creating router objects
 const routes = express.Router();
 
-// for domain
-let url = "";
 
 // router middleware
 routes.use(function(req, res, next) {
     // to get domain 
     let host = req.hostname;
     let protocol = req.protocol;
-    url = protocol + "://" + host;
+    let url = protocol + "://" + host;
     next();
 });
 

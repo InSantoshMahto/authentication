@@ -3,6 +3,8 @@ const path = require('path');
 
 // importing node third parties modules
 const express = require('express');
+const expressSession = require('express-session');
+const cookieParser = require('cookie-parser');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 
@@ -27,6 +29,18 @@ let formData = express.urlencoded({ "extended": false });
 // parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: false }));
 
+/* ===================== middleware =============== */
+// express cookie-parser
+app.use(cookieParser());
+
+// session express-session
+app.use(expressSession({
+    secret: 'one net software info',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }
+}));
+
 // for logging perpurse
 app.use(logger('dev'));
 
@@ -42,7 +56,7 @@ app.set('views', path.join(__dirname, 'views'));
 // view engine setup
 app.set('view engine', 'ejs');
 
-// set up  for routes
+/* ======================= set up  for routes ========================== */
 app.use('/api', jsonRoutes, API);
 app.use('/', formData, MAIN);
 

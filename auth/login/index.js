@@ -1,12 +1,12 @@
 'use strict'
 
 // import 
-// const express = require('express');
+const express = require('express');
 // const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
 // const jwtSimple = require('jwt-simple');
 // const objectHash = require('object-hash');
-// const app = express();
+const app = express();
 
 // importing config
 const db = require('../../config/database');
@@ -19,8 +19,9 @@ let login = (req, res) => {
     // declaring errors array to store errors messeges
     let consloeMsg = '';
     let userMsg = '';
+
     // getting data from user
-    let userId = req.body.userId;
+    let clientId = req.body.userId;
     let password = req.body.password;
     let rememberMe = req.body.rememberMe;
 
@@ -35,15 +36,15 @@ let login = (req, res) => {
 
     // gethering all the data
     let userData = {
-        userName: userId,
-        email: userId,
-        mobile: userId,
+        userName: clientId,
+        email: clientId,
+        mobile: clientId,
         password: password,
         rememberMe: rememberMe
     };
 
     // validating whether user enter all the required data or not
-    if (!userId || !password) {
+    if (!clientId || !password) {
         // defining the msg
         consloeMsg = 'invalid Credentials';
         userMsg = 'Please enter all fields required Field.';
@@ -74,13 +75,14 @@ let login = (req, res) => {
             if (err) {
                 // defining the msg
                 consloeMsg = '\nError during fetching the Id:\t' + err + '\nSQL:\t' + query;
-                userMsg = 'internal server error. please contact to Support Team';
+                userMsg = 'Internal server error. please contact to Support Team';
 
                 // calling errorResponce function
                 errorResponse(res, consloeMsg, userMsg, 500, err);
 
             } else if (!(results.length > 0)) {
                 // this will executed when user not register. i.e, user doesn`t  have account. 
+
                 // defining the msg
                 consloeMsg = '\nUser Does Not Exist.';
                 userMsg = '\nUser Does Not Exist. First Register then try.';
@@ -92,10 +94,10 @@ let login = (req, res) => {
                 // this will execute when user having a account.
 
                 // storing id into userData
-                userData.id = results[0].id;
+                userData.userId = results[0].id;
 
                 // preparing the Select query
-                query = "SELECT user_name, email, mobile, pwd_hash, hash, account_status FROM users WHERE id = " + userData.id;
+                query = "SELECT user_name, email, mobile, pwd_hash, hash, account_status FROM users WHERE id = " + userData.userId;
 
                 // fetching all the required credentials.            
                 conToMySql.query(query, function(err, results, fields) {
@@ -145,6 +147,28 @@ let login = (req, res) => {
                                 console.log(userData);
                                 console.log("User Loged In Successfully.");
 
+                                /* -------------- Session ------------------- */
+                                // Configuring data
+                                let authSessions = {
+                                    userId: userData.userId,
+                                    userName: userData.userName,
+                                    password: userData.password
+                                };
+
+                                // Calling setCookies function
+                                setSession(req, res, authSessions);
+                                /* -------------- Cookies ------------------- */
+                                // Configuring data
+                                let authCookies = {
+                                    clientId: userData.userName,
+                                    password: userData.password
+                                };
+
+                                // Calling setCookies function
+                                setCookies(req, res, authCookies);
+
+
+                                /* -------------- Send Responce To The Users ------------------- */
                                 // sending  the success responce
                                 res.send({
                                     status: 'success',
@@ -169,7 +193,25 @@ let verification = (req, res) => {
 
 /* ==================================== supporting functions ===================================== */
 
-//error responce to users
+// configuring the cooking...... i.e, sending cookie to the browser
+function setCookies(_req, _res, authCookies) {
+    console.log("Setup for cookies started.");
+    _res.cookie('clientId', authCookies.clientId, { domain: _req.hostname, path: '/', secure: false });
+    _res.cookie('password', authCookies.password, { domain: _req.hostname, path: '/', secure: false });
+    console.log("Cookies set successfully.");
+}
+
+// configuring the Session...... i.e, storing session to the server
+function setSession(_req, _res, authSessions) {
+    console.log("Setup for Session started.");
+    _req.session.userId = authSessions.userId;
+    _req.session.userName = authSessions.userName;
+    _req.session.password = authSessions.password;
+    console.log(_req.session);
+    console.log("Session set successfully.");
+}
+
+// Error responce to users
 function errorResponse(_res, _consoleMsg, _userMsg, _code, _err) {
     let errors = [];
     // decideing the error code messege
