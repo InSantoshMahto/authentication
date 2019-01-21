@@ -6,6 +6,7 @@
 const bcrypt = require('bcryptjs');
 // const jwtSimple = require('jwt-simple');
 const objectHash = require('object-hash');
+const isEmail = require('isemail');
 // const app = express();
 
 // importing config
@@ -108,6 +109,15 @@ let register = (req, res) => {
         errorResponse(res, consloeMsg, userMsg, 500, null);
 
     } else {
+        // validation of recieved user data
+        valRecDatByUser(userData.email, (err) => {
+            if (err) {
+                console.log("Invalid email address.");
+            } else {
+                console.log("Valid email address.");
+            }
+        });
+
         // getting mysql connection credentials 
         let conToMySql = db.connections.mysql();
         // coonecting to database
@@ -215,6 +225,15 @@ let verification = (req, res) => {
 }
 
 /* ==================================== supporting functions ===================================== */
+
+// validating credentials given/received by the user i.e, validateReceivedDataByUser
+function valRecDatByUser(_email, callback) {
+    if (isEmail.validate(_email)) {
+        return callback(false);
+    } else {
+        return callback(true);
+    }
+}
 
 //error responce to users
 function errorResponse(_res, _consoleMsg, _userMsg, _code, _err) {

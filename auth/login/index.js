@@ -4,12 +4,14 @@
 const express = require('express');
 // const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
+const isEmail = require('isemail');
 // const jwtSimple = require('jwt-simple');
 // const objectHash = require('object-hash');
-const app = express();
+// const app = express();
 
-// importing config
+// importing config and custom functionalities
 const db = require('../../config/database');
+let modules = require('../../modules');
 
 // declaring error messege constant
 const ERRMSG5XX = 'server side error';
@@ -53,6 +55,15 @@ let login = (req, res) => {
         errorResponse(res, consloeMsg, userMsg, 400, null);
 
     } else {
+        // validation of recieved user data
+        modules.validate.email(userData.email, (err) => {
+            if (err) {
+                console.log("Invalid email address.");
+            } else {
+                console.log("Valid email address.");
+            }
+        });
+
         // getting mysql connection credentials 
         let conToMySql = db.connections.mysql();
 
