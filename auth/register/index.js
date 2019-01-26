@@ -205,8 +205,6 @@ let register = (req, res) => {
                                     });
                                 }
                             });
-                            // closing the db connection.
-                            conToMySql.end(() => console.log("Connection Closed"));
 
                         });
                     });
