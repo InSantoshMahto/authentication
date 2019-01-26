@@ -11,10 +11,7 @@ module.exports = {
     dashboard: {
         dashboard: (req, res) => { res.send("dashboard"); }
     },
-    register: {
-        register: register.register,
-        verification: register.verification
-    },
+    register: register,
     login: {
         login: login.login,
         verification: login.verification

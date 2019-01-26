@@ -7,7 +7,7 @@ module.exports = {
         database: "auth",
         status: "ok"
     },
-    psql: {
+    ps: {
         host: "localhost",
         port: "5432",
         user: "root",

@@ -1,15 +1,25 @@
 'use strict'
 
 // import 
-// const express = require('express');
-// const mysql = require('mysql');
-const bcrypt = require('bcryptjs');
-// const jwtSimple = require('jwt-simple');
-// const objectHash = require('object-hash');
-// const app = express();
+const jwtSimple = require('jwt-simple');
 
 let logout = (req, res) => {
-    res.send({ status: 'logout' });
+    // clearing the cookies
+    res.clearCookie('clientId', { path: '/' });
+    res.clearCookie('password', { path: '/' });
+
+    // clearing the session
+    console.log(req.session.userId, req.session.userName, req.session.password);
+
+    console.log(req.session);
+    req.session.destroy(function(err) {
+        if (!err) {
+            // cannot access session here
+            res.send({
+                password: 'logout'
+            });
+        }
+    })
 }
 
 /* ==================== Export ====================  */

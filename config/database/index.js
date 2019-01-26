@@ -2,8 +2,9 @@
 let connections = require('./connections');
 let credentials = require('./credentials');
 
-// exporting functionalities
-module.exports = {
-    connections: connections,
-    credentials: credentials
-}
+let db = {
+    credentials: credentials,
+    connections: connections
+};
+// exports
+module.exports = db;

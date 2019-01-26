@@ -2,24 +2,20 @@
 
 // import 
 const express = require('express');
-// const mysql = require('mysql');
 const bcrypt = require('bcryptjs');
-const isEmail = require('isemail');
-// const jwtSimple = require('jwt-simple');
-// const objectHash = require('object-hash');
-// const app = express();
+const jwtSimple = require('jwt-simple');
 
 // importing config and custom functionalities
 const db = require('../../config/database');
 let modules = require('../../modules');
 
-// declaring error messege constant
-const ERRMSG5XX = 'server side error';
-const ERRMSG4XX = 'client side error';
+// declaring error message constant
+const ERROR5XX = 'server side error';
+const ERROR4XX = 'client side error';
 
 let login = (req, res) => {
-    // declaring errors array to store errors messeges
-    let consloeMsg = '';
+    // declaring errors array to store errors messages
+    let consoleMsg = '';
     let userMsg = '';
 
     // getting data from user
@@ -36,7 +32,7 @@ let login = (req, res) => {
     let lastLogin = date.getDate() + "-" + date.getMonth() + 1 + "-" + date.getFullYear();
     // console.log(lastLogin);
 
-    // gethering all the data
+    // collecting all the data
     let userData = {
         userName: clientId,
         email: clientId,
@@ -48,14 +44,14 @@ let login = (req, res) => {
     // validating whether user enter all the required data or not
     if (!clientId || !password) {
         // defining the msg
-        consloeMsg = 'invalid Credentials';
+        consoleMsg = 'invalid Credentials';
         userMsg = 'Please enter all fields required Field.';
 
-        // calling errorResponce function
-        errorResponse(res, consloeMsg, userMsg, 400, null);
+        // calling errorResponse function
+        errorResponse(res, consoleMsg, userMsg, 400, null);
 
     } else {
-        // validation of recieved user data
+        // validation of received user data
         modules.validate.email(userData.email, (err) => {
             if (err) {
                 console.log("Invalid email address.");
@@ -67,7 +63,7 @@ let login = (req, res) => {
         // getting mysql connection credentials 
         let conToMySql = db.connections.mysql();
 
-        // coonecting to database
+        // connecting to database
         conToMySql.connect((err) => {
             if (err) {
                 console.error('error connecting: ' + err.stack);
@@ -85,21 +81,21 @@ let login = (req, res) => {
         conToMySql.query(query, function(err, results, fields) {
             if (err) {
                 // defining the msg
-                consloeMsg = '\nError during fetching the Id:\t' + err + '\nSQL:\t' + query;
+                consoleMsg = '\nError during fetching the Id:\t' + err + '\nSQL:\t' + query;
                 userMsg = 'Internal server error. please contact to Support Team';
 
-                // calling errorResponce function
-                errorResponse(res, consloeMsg, userMsg, 500, err);
+                // calling errorResponse function
+                errorResponse(res, consoleMsg, userMsg, 500, err);
 
             } else if (!(results.length > 0)) {
-                // this will executed when user not register. i.e, user doesn`t  have account. 
+                // this will executed when user not register. i.e, user does not  have account. 
 
                 // defining the msg
-                consloeMsg = '\nUser Does Not Exist.';
+                consoleMsg = '\nUser Does Not Exist.';
                 userMsg = '\nUser Does Not Exist. First Register then try.';
 
-                // calling errorResponce function
-                errorResponse(res, consloeMsg, userMsg, 400, err);
+                // calling errorResponse function
+                errorResponse(res, consoleMsg, userMsg, 400, err);
 
             } else {
                 // this will execute when user having a account.
@@ -114,11 +110,11 @@ let login = (req, res) => {
                 conToMySql.query(query, function(err, results, fields) {
                     if (err) {
                         // defining the msg
-                        consloeMsg = '\nError during fetching the user credentials:\t' + err + '\nSQL:\t' + query;
+                        consoleMsg = '\nError during fetching the user credentials:\t' + err + '\nSQL:\t' + query;
                         userMsg = 'internal server error. please contact to Support Team';
 
-                        // calling errorResponce function
-                        errorResponse(res, consloeMsg, userMsg, 500, err);
+                        // calling errorResponse function
+                        errorResponse(res, consoleMsg, userMsg, 500, err);
 
                     } else {
                         // updating username, email, mobile
@@ -133,30 +129,30 @@ let login = (req, res) => {
                         bcrypt.compare(userData.password, userData.pwdHash, function(err, compareResult) {
                             if (!compareResult) {
                                 // defining the msg
-                                consloeMsg = '\nPassword do not match.';
+                                consoleMsg = '\nPassword do not match.';
                                 userMsg = 'Password do not match';
 
-                                // calling errorResponce function
-                                errorResponse(res, consloeMsg, userMsg, 500, err);
+                                // calling errorResponse function
+                                errorResponse(res, consoleMsg, userMsg, 500, err);
 
-                                console.log(userData.accountStatus);
+                                // console.log(userData.accountStatus);
 
                             } else if (!userData.accountStatus) {
                                 // checking the account status. 
-                                //if user Deactive
+                                //if user Deactivate
 
                                 // defining the msg
-                                consloeMsg = '\n User Account is DeActivated. account_status';
+                                consoleMsg = '\n User Account is DeActivated. account_status';
                                 userMsg = 'your Account is DeActivated. please contact to support team.';
 
-                                // calling errorResponce function
-                                errorResponse(res, consloeMsg, userMsg, 500, err);
+                                // calling errorResponse function
+                                errorResponse(res, consoleMsg, userMsg, 500, err);
 
                             } else {
                                 //if user is Active
-                                //loging the all data
-                                console.log(userData);
-                                console.log("User Loged In Successfully.");
+                                //print all data on console
+                                // console.log(userData);
+                                console.log("User Log In Successfully.");
 
                                 /* -------------- Session ------------------- */
                                 // Configuring data
@@ -166,24 +162,30 @@ let login = (req, res) => {
                                     password: userData.password
                                 };
 
-                                // Calling setCookies function
+                                // Calling setSession function
                                 setSession(req, res, authSessions);
+
                                 /* -------------- Cookies ------------------- */
-                                // Configuring data
-                                let authCookies = {
-                                    clientId: userData.userName,
-                                    password: userData.password
-                                };
+                                if (userData.rememberMe) {
 
-                                // Calling setCookies function
-                                setCookies(req, res, authCookies);
+                                    // Configuring data
+                                    let authCookies = {
+                                        clientId: userData.userName,
+                                        password: userData.password
+                                    };
 
+                                    // Calling setCookies function
+                                    setCookies(req, res, authCookies);
 
-                                /* -------------- Send Responce To The Users ------------------- */
-                                // sending  the success responce
+                                }
+
+                                console.log(req.session.userId, req.session.userName, req.session.password);
+
+                                /* -------------- Send Response To The Users ------------------- */
+                                // sending  the success Response
                                 res.send({
                                     status: 'success',
-                                    msg: 'User Loged In Successfully.'
+                                    msg: 'User Log In Successfully.'
                                 });
                             }
                             // closing the db connection.
@@ -207,33 +209,51 @@ let verification = (req, res) => {
 // configuring the cooking...... i.e, sending cookie to the browser
 function setCookies(_req, _res, authCookies) {
     console.log("Setup for cookies started.");
-    _res.cookie('clientId', authCookies.clientId, { domain: _req.hostname, path: '/', secure: false });
-    _res.cookie('password', authCookies.password, { domain: _req.hostname, path: '/', secure: false });
+
+    let payloadIdKey = authCookies.clientId;
+    let payloadPwdKey = authCookies.password;
+
+    // secret key
+    let secret = "one net software info";
+
+    // encode
+    let tokenIdKey = jwtSimple.encode(payloadIdKey, secret);
+    let tokenPwdKey = jwtSimple.encode(payloadPwdKey, secret);
+
+    // decode
+    // var decoded = jwtSimple.decode(token, secret);
+    // console.log(decoded);
+
+    const DAY = 86400000; // 86400000 i.e, 1 day
+    _res.cookie('clientId', tokenIdKey, { domain: _req.hostname, expires: new Date(Date.now() + DAY * 2), path: '/', secure: false });
+    _res.cookie('password', tokenPwdKey, { domain: _req.hostname, expires: new Date(Date.now() + DAY * 2), path: '/', secure: false });
     console.log("Cookies set successfully.");
 }
 
 // configuring the Session...... i.e, storing session to the server
 function setSession(_req, _res, authSessions) {
     console.log("Setup for Session started.");
+
     _req.session.userId = authSessions.userId;
     _req.session.userName = authSessions.userName;
     _req.session.password = authSessions.password;
-    console.log(_req.session);
+
+    // console.log(_req.session);
     console.log("Session set successfully.");
 }
 
-// Error responce to users
+// Error Response to users
 function errorResponse(_res, _consoleMsg, _userMsg, _code, _err) {
     let errors = [];
-    // decideing the error code messege
-    let _errCodeMsg = _code == 500 ? ERRMSG5XX : ERRMSG4XX;
+    // decision the error code message
+    let _errCodeMsg = _code == 500 ? ERROR5XX : ERROR4XX;
 
-    // config. i.e, if _err is Not pressent then _err messege should not print in new line
+    // config. i.e, if _err is Not present then _err message should not print in new line
     _err = (_err == null) ? '' : "\n" + _err;
 
     console.log(_consoleMsg, _err);
 
-    //pushin/storing errors
+    // push/storing errors
     errors.push({
         msg: _userMsg
     });

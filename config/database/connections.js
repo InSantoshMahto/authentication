@@ -15,10 +15,10 @@ module.exports = {
             database: credentials.mysql.database
         })
     },
-    psql: {
+    ps: {
         status: "i am fine"
     },
-    mongodb: {
+    mongo: {
         status: "i am fine mongodb"
     }
 };

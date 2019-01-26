@@ -13,21 +13,12 @@ let app = express();
 
 // requiring routing
 let MAIN = require('./routes');
-let API = require('./routes/api');
 
 // defining port number
 const PORT = process.env.PORT || 85;
 
 /* configuration for MIME type  */
-
-// declaring MIME type as a JSON
-let jsonRoutes = express.json();
-
-// form data 
-let formData = express.urlencoded({ "extended": false });
-
-// parse application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 /* ===================== middleware =============== */
 // express cookie-parser
@@ -38,16 +29,19 @@ app.use(expressSession({
     secret: 'one net software info',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true }
+    cookie: {
+        secure: false,
+        httpOnly: false
+    }
 }));
 
-// for logging perpurse
+// for logging the routes
 app.use(logger('dev'));
 
 // serving favicon
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
-// plublic directry setup
+// public directory setup
 app.use(express.static(path.join(__dirname, 'public')));
 
 // view directory setup
@@ -57,8 +51,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 /* ======================= set up  for routes ========================== */
-app.use('/api', jsonRoutes, API);
-app.use('/', formData, MAIN);
+app.use('/', MAIN);
 
-// assgining port number
+// listening port number
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));

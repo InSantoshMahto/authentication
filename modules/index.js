@@ -9,7 +9,5 @@ let validate = require('./validate');
 module.exports = {
     email: email,
     sms: sms,
-    validate: {
-        email: validate.email
-    }
+    validate: validate
 }

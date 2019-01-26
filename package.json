@@ -1,7 +1,7 @@
 {
     "name": "login_system",
     "version": "1.0.0",
-    "description": "node js authantication system using node js, and mysql ",
+    "description": "node js authentication system using node js, and mysql ",
     "main": "index.js",
     "scripts": {
         "start": "nodemon index.js",
