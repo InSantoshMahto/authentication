@@ -1,5 +1,5 @@
 {
-    "name": "login_system",
+    "name": "authentication",
     "version": "1.0.0",
     "description": "node js authentication system using node js, and mysql ",
     "main": "index.js",
@@ -9,26 +9,26 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/InSantoshMahto/login_system.git"
+        "url": "git+https://github.com/InSantoshMahto/authentication.git"
     },
     "keywords": [
         "onsi",
-        "onsiindia",
+        "authentication",
         "insantoshmahto"
     ],
     "author": "santosh mahto",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/InSantoshMahto/login_system/issues"
+        "url": "https://github.com/InSantoshMahto/authentication/issues"
     },
-    "homepage": "https://github.com/InSantoshMahto/login_system#readme",
+    "homepage": "https://github.com/InSantoshMahto/authentication#readme",
     "devDependencies": {
-        "nodemon": "^1.18.9"
+        "eslint": "^6.1.0",
+        "nodemon": "^1.19.1"
     },
     "dependencies": {
         "bcryptjs": "^2.4.3",
         "cookie-parser": "^1.4.3",
-        "ejs": "^2.6.1",
         "express": "^4.16.4",
         "express-session": "^1.15.6",
         "isemail": "^3.2.0",

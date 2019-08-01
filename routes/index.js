@@ -1,9 +1,9 @@
-'use strict'
+'use strict';
 
 // importing third party module
 const express = require('express');
 
-let formData = express.urlencoded({ "extended": false });
+let formData = express.urlencoded({ extended: false });
 
 // importing custom module
 let auth = require('../auth');
@@ -16,23 +16,20 @@ let logout = auth.logout;
 // creating router objects
 const routes = express.Router();
 
-// public routes
-const INDEX = 'index';
-const ERROR404 = '404';
-
 // for domain
-let url = "";
+let url = '';
 
 // router middleware
 routes.use(function(req, res, next) {
-    // to get domain 
-    let host = req.hostname;
-    let protocol = req.protocol;
-    url = protocol + "://" + host;
-    next();
+  // to get domain
+  let host = req.hostname;
+  let protocol = req.protocol;
+  url = protocol + '://' + host;
+  next();
 });
 
 /* ============================ Config routes ================================ */
+
 /* ---------------------------- Registration  --------------------------------*/
 // register
 routes.post('/register', register.register);
@@ -41,7 +38,7 @@ routes.post('/register', register.register);
 routes.post('/regOtpVerification', register.verification);
 
 /* ---------------------------- Login  --------------------------------*/
-// login 
+// login
 routes.post('/login', login.login);
 
 // login OTP verification
@@ -62,16 +59,17 @@ routes.post('/forPasChaPassword', forPassword.chaPassword);
 routes.post('/logout', logout);
 
 /* ============================ view routes ================================ */
+
 /* ---------------------------- HOME  --------------------------------*/
 // Home
 routes.get('/', formData, (req, res) => {
-    res.render(INDEX);
+  res.send('working');
 });
 
 /* ---------------------------- Error  --------------------------------*/
 // error 404
 routes.all('/*', formData, (req, res) => {
-    res.render(ERROR404);
+  res.send('error 404');
 });
 
 module.exports = routes;

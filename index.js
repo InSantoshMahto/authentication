@@ -25,15 +25,17 @@ app.use(express.json());
 app.use(cookieParser());
 
 // session express-session
-app.use(expressSession({
+app.use(
+  expressSession({
     secret: 'one net software info',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
-        httpOnly: false
-    }
-}));
+      secure: false,
+      httpOnly: false,
+    },
+  })
+);
 
 // for logging the routes
 app.use(logger('dev'));
@@ -43,12 +45,6 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // public directory setup
 app.use(express.static(path.join(__dirname, 'public')));
-
-// view directory setup
-app.set('views', path.join(__dirname, 'views'));
-
-// view engine setup
-app.set('view engine', 'ejs');
 
 /* ======================= set up  for routes ========================== */
 app.use('/', MAIN);
