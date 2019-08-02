@@ -2,7 +2,7 @@
 const mysql = require('mysql');
 
 // importing configuration module
-let credentials = require("./credentials");
+const credentials = require("./credentials");
 
 // exporting connections
 module.exports = {

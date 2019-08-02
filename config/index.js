@@ -4,7 +4,7 @@
  * Date: 23-01-2019
  */
 
-'use strict'
+'use strict';
 
 //  imports
 let db = require('./database');
@@ -12,7 +12,7 @@ let db = require('./database');
 // declare config objects
 let config = {};
 
-// db 
+// db
 config.db = db;
 
 // console.log(config.db);

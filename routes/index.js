@@ -58,14 +58,6 @@ routes.post('/forPasChaPassword', forPassword.chaPassword);
 // logOut
 routes.post('/logout', logout);
 
-/* ============================ view routes ================================ */
-
-/* ---------------------------- HOME  --------------------------------*/
-// Home
-routes.get('/', formData, (req, res) => {
-  res.send('working');
-});
-
 /* ---------------------------- Error  --------------------------------*/
 // error 404
 routes.all('/*', formData, (req, res) => {

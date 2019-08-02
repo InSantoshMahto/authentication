@@ -15,7 +15,7 @@ let app = express();
 let MAIN = require('./routes');
 
 // defining port number
-const PORT = process.env.PORT || 85;
+const PORT = process.env.PORT || 8585;
 
 /* configuration for MIME type  */
 app.use(express.json());
