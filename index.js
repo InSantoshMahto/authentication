@@ -1,53 +1,25 @@
-// importing node built in modules
 const path = require('path');
-
-// importing node third parties modules
 const express = require('express');
-const expressSession = require('express-session');
-const cookieParser = require('cookie-parser');
-const favicon = require('serve-favicon');
 const logger = require('morgan');
 
-//creating express app
-let app = express();
+const config = require('./config'); // configuration
+const routes = require('./routes'); //  routing
 
-// requiring routing
-let MAIN = require('./routes');
+const PORT = process.env.PORT || 8585; // defining port number
 
-// defining port number
-const PORT = process.env.PORT || 8585;
+const app = express(); //creating express app
 
-/* configuration for MIME type  */
-app.use(express.json());
-
-/* ===================== middleware =============== */
-// express cookie-parser
-app.use(cookieParser());
-
-// session express-session
-app.use(
-  expressSession({
-    secret: 'one net software info',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false,
-      httpOnly: false,
-    },
-  })
-);
+// configuration for MIME type  
+app.use(express.json(config.json));
 
 // for logging the routes
 app.use(logger('dev'));
 
-// serving favicon
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-
 // public directory setup
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), config.static));
 
 /* ======================= set up  for routes ========================== */
-app.use('/', MAIN);
+app.use('/', routes);
 
 // listening port number
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));

@@ -1,67 +1,27 @@
-'use strict';
-
-// importing third party module
 const express = require('express');
 
-let formData = express.urlencoded({ extended: false });
+const config = require('../config');
+const v1 = require('./v1');
+const v2 = require('./v2');
 
-// importing custom module
-let auth = require('../auth');
-let dashboard = auth.dashboard;
-let register = auth.register;
-let login = auth.login;
-let forPassword = auth.forPassword;
-let logout = auth.logout;
+const router = express.Router(config.router);
 
-// creating router objects
-const routes = express.Router();
-
-// for domain
-let url = '';
-
-// router middleware
-routes.use(function(req, res, next) {
-  // to get domain
-  let host = req.hostname;
-  let protocol = req.protocol;
-  url = protocol + '://' + host;
-  next();
+// origin
+router.all('/', (req, res) => {
+  res.status(200).json({ success: true, data: 'auth api working fine.' });
 });
 
-/* ============================ Config routes ================================ */
+// v1
+router.use('/v1', v1);
 
-/* ---------------------------- Registration  --------------------------------*/
-// register
-routes.post('/register', register.register);
+// v2
+router.use('/v2', v2);
 
-// registration OTP verification
-routes.post('/regOtpVerification', register.verification);
-
-/* ---------------------------- Login  --------------------------------*/
-// login
-routes.post('/login', login.login);
-
-// login OTP verification
-routes.post('/logOtpVerification', login.verification);
-
-/* ---------------------------- Forget Password  --------------------------------*/
-// forget password interface for getting user details forgetPasswordGetUserDetails
-routes.post('/forPasGetUseDetails', forPassword.getUseDetails);
-
-// forget password OTP verification
-routes.post('/forPasOtpVerification', forPassword.verification);
-
-// forget password interface for changing the user password forgetPasswordChangePassword
-routes.post('/forPasChaPassword', forPassword.chaPassword);
-
-/* ---------------------------- LogOut  --------------------------------*/
-// logOut
-routes.post('/logout', logout);
-
-/* ---------------------------- Error  --------------------------------*/
-// error 404
-routes.all('/*', formData, (req, res) => {
-  res.send('error 404');
+// 404
+router.all('/*', (req, res) => {
+  res
+    .status(404)
+    .json({ success: false, error: { status: 404, message: 'Not Found' } });
 });
 
-module.exports = routes;
+module.exports = router;
