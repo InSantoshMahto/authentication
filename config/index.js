@@ -30,14 +30,13 @@ config.static = {
   redirect: true,
   index: 'index.html',
 };
+
 // router config
 config.router = {
   caseSensitive: false,
   mergeParams: false,
   strict: false,
 };
-
-// console.log(config.db);
 
 // exports
 module.exports = config;

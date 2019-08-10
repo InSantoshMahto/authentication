@@ -1,10 +1,7 @@
-// // importing functionalities
-// let connections = require('./connections');
-// let credentials = require('./credentials');
+const dbConfig = {
+  host: 'mongodb://127.0.0.1/',
+  name: 'auth',
+};
+const mongoDb = dbConfig.host + dbConfig.name;
 
-// let db = {
-//   credentials: credentials,
-//   connections: connections,
-// };
-// // exports
-// module.exports = db;
+module.exports = mongoDb;

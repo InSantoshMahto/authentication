@@ -5,11 +5,11 @@ const logger = require('morgan');
 const config = require('./config'); // configuration
 const routes = require('./routes'); //  routing
 
-const PORT = process.env.PORT || 8585; // defining port number
+const PORT = process.env.PORT || 8500; // defining port number
 
 const app = express(); //creating express app
 
-// configuration for MIME type  
+// configuration for MIME type
 app.use(express.json(config.json));
 
 // for logging the routes
