@@ -5,12 +5,14 @@ const bcrypt = require('bcryptjs');
 const objectHash = require('object-hash');
 
 const errors = require('../../core/errors');
-const users = require('../../models').users;
-const mongoDb = require('../../config').db;
+const usersModel = require('../../models').users;
+const otpModel = require('../../models').otp;
+const core = require('../../core');
+const mongoDb = require('../../config').mongoURI;
 
 const lib = {};
 
-lib.init = (req, res) => {
+lib.init = async (req, res) => {
   let errMessage = [];
   let errFlag = false;
 
@@ -157,18 +159,6 @@ lib.init = (req, res) => {
     { algorithm: 'md5', encoding: 'hex' }
   );
 
-  // making lastLogin as a null
-  const lastLogin = null;
-
-  // making emailStatus Deactivate (false) , it will activated after user verify email address
-  const emailStatus = false;
-
-  // making mobileStatus Deactivate (false) , it will activated after user verify mobile
-  const mobileStatus = false;
-
-  // making accountStatus Deactivate (false) , it will activated after user verify there credentials
-  const accountStatus = false;
-
   // adding remark
   const remark = 'user registered But Not verified';
 
@@ -181,7 +171,7 @@ lib.init = (req, res) => {
     throw err;
   } else {
     // check user not already exist
-    mongoose.connect(mongoDb, { useNewUrlParser: true });
+    await mongoose.connect(mongoDb, { useNewUrlParser: true });
 
     // Get the default connection
     const db = mongoose.connection;
@@ -192,7 +182,7 @@ lib.init = (req, res) => {
     const userExistence = { flag: false, type: null };
 
     // check user existence with mobile number
-    users.findOne({ userName: mobile }, (dbErr, docs) => {
+    await usersModel.findOne({ userName: mobile }, (dbErr, docs) => {
       if (dbErr) {
         console.error(
           `ERROR: during checking the existence (WITH_MOBILE) of user into db.: ${dbErr}`
@@ -207,86 +197,95 @@ lib.init = (req, res) => {
         userExistence.flag = true;
         userExistence.type = 'mobile';
       }
+    });
 
-      // check user existence with email
-      users.findOne({ userName: email }, (dbErr, docs) => {
-        if (dbErr) {
-          console.error(
-            `ERROR: during checking the existence (WITH_EMAIL) of user into db.: ${dbErr}`
-          );
+    // check user existence with email
+    await usersModel.findOne({ userName: email }, (dbErr, docs) => {
+      if (dbErr) {
+        console.error(
+          `ERROR: during checking the existence (WITH_EMAIL) of user into db.: ${dbErr}`
+        );
+        const err = new Error();
+        err.code = errors.statusCode[500].status;
+        err.name = errors.statusCode[500].name;
+        err.message = errors.statusCode[500].message;
+        throw err;
+      }
+      if (docs) {
+        userExistence.flag = true;
+        userExistence.type = 'email';
+      }
+    });
+
+    // check if user already exist or not
+    if (userExistence.flag) {
+      const message = userExistence.type === 'email' ? email : mobile;
+      console.warn(
+        `WARNING: user already exist with ${userExistence.type}: ${message}.`
+      );
+
+      res.status(errors.statusCode[400].status).json({
+        success: false,
+        error: {
+          status: errors.statusCode[400].status,
+          name: errors.statusCode[400].name,
+          message: `user already exist with ${userExistence.type}: ${message}.`,
+        },
+      });
+    } else {
+      // insert user details
+      const newUser = new usersModel({
+        userName,
+        email,
+        mobile,
+        firstName,
+        middleName,
+        lastName,
+        password,
+        gender,
+        dob,
+        hash,
+        remark,
+      });
+      // executing query into db
+      newUser
+        .save()
+        .then(dbRes => {
+          // console.log('successfully inserted:', dbRes);
+          const _id = dbRes.id;
+          // generate otp
+          const otp = core.otpGenerator(6); // console.log(`generated otp:\t`, otp);
+          // send OTP
+          core.email.otp(_id, firstName, email, otp);
+          // update on db
+          const otpEmail = new otpModel({
+            otp,
+            user_id: _id,
+            receiver: email,
+            type: 'EMAIL',
+          });
+          otpEmail.save().then(dbRes => {
+            console.info('INFO: otp saved on DB.:\t', dbRes._id);
+          });
+          // send response
+          res.status(200).json({
+            success: true,
+            data: {
+              userName: userName,
+              type: 'EMAIL',
+              message: 'otp has successfully send.',
+            },
+          });
+        })
+        .catch(dbRrr => {
+          console.error(`ERROR:  during inserting the data into db.: ${dbRrr}`);
           const err = new Error();
           err.code = errors.statusCode[500].status;
           err.name = errors.statusCode[500].name;
           err.message = errors.statusCode[500].message;
           throw err;
-        }
-        if (docs) {
-          userExistence.flag = true;
-          userExistence.type = 'email';
-        }
-        // check if user already exist or not
-        if (userExistence.flag) {
-          const message = userExistence.type === 'email' ? email : mobile;
-          console.warn(
-            `WARNING: user already exist with ${
-              userExistence.type
-            }: ${message}.`
-          );
-
-          res.status(errors.statusCode[400].status).json({
-            success: false,
-            error: {
-              status: errors.statusCode[400].status,
-              name: errors.statusCode[400].name,
-              message: `user already exist with ${
-                userExistence.type
-              }: ${message}.`,
-            },
-          });
-        } else {
-          // insert user details
-          const newUser = new users({
-            userName,
-            email,
-            mobile,
-            firstName,
-            middleName,
-            lastName,
-            password,
-            gender,
-            dob,
-            lastLogin,
-            hash,
-            emailStatus,
-            mobileStatus,
-            accountStatus,
-            remark,
-          });
-          // executing query into db
-          newUser
-            .save()
-            // eslint-disable-next-line no-unused-vars
-            .then(dbRes => {
-              // console.log('successfully inserted:', dbRes);
-
-              res.status(200).json({
-                success: true,
-                data: { message: 'otp has successfully send.' },
-              });
-            })
-            .catch(dbRrr => {
-              console.error(
-                `ERROR:  during inserting the data into db.: ${dbRrr}`
-              );
-              const err = new Error();
-              err.code = errors.statusCode[500].status;
-              err.name = errors.statusCode[500].name;
-              err.message = errors.statusCode[500].message;
-              throw err;
-            });
-        }
-      });
-    });
+        });
+    }
   }
 };
 

@@ -1,13 +1,10 @@
-'use strict'
-
-// imports
-let email = require('./email');
-let sms = require('./sms');
-let validate = require('./validate');
+const email = require('./email');
+const sms = require('./sms');
+const otpGenerator = require('./otpGenerator');
 
 // exports
 module.exports = {
-    email: email,
-    sms: sms,
-    validate: validate
+    email,
+    sms,
+    otpGenerator
 }

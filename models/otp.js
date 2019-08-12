@@ -4,11 +4,12 @@ const Schema = mongoose.Schema;
 const lib = {};
 
 const otp = new Schema({
-  userName: { type: String },
-  type: { type: String },
-  email: { type: String },
-  client: { type: String },
-  validFor: { type: String },
+  user_id: { type: Schema.Types.ObjectId },
+  otp: { type: Number, min: 4 },
+  type: { type: String, uppercase: true, trim: true, default: 'EMAIL' },
+  clientType: { type: String, uppercase: true, trim: true, default: 'WEB' },
+  receiver: { type: String },
+  isValid: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 
