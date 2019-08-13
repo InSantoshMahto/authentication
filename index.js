@@ -26,5 +26,5 @@ app.use(express.static(path.join(__dirname, 'public'), config.static));
 /* ======================= set up  for routes ========================== */
 app.use('/', routes);
 
-// listening port number l
+// listening port number
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
