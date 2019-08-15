@@ -1,9 +1,9 @@
 const users = require('./users');
-const otp = require('./otp');
+const otps = require('./otps');
 
 const model = {};
 
 model.users = users;
-model.otp = otp;
+model.otps = otps;
 
 module.exports = model;

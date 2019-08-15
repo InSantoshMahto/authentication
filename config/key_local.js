@@ -1,6 +1,6 @@
 module.exports = {
   // db
-  mongoURI: 'mongodb://127.0.0.1/auth',
+  mongoURI: 'mongodb://127.0.0.1/auth_local',
 
   // MIME json
   json: {

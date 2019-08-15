@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const lib = {};
 
-const otp = new Schema({
+const otps = new Schema({
   user_id: { type: Schema.Types.ObjectId },
   otp: { type: Number, min: 4 },
   type: { type: String, uppercase: true, trim: true, default: 'EMAIL' },
@@ -13,6 +13,6 @@ const otp = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-lib.otp = mongoose.model('otp', otp);
+lib.otps = mongoose.model('otps', otps);
 
-module.exports = lib.otp;
+module.exports = lib.otps;

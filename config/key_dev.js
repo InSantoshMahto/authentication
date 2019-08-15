@@ -1,6 +1,6 @@
 module.exports = {
   // db
-  mongoURI: 'mongodb://127.0.0.1/auth',
+  mongoURI: 'mongodb://onsi:onsi@12345@ds021915.mlab.com:21915/auth_dev',
 
   // MIME json
   json: {
