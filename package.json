@@ -4,9 +4,10 @@
   "description": "node js authentication system using node js, and mongoose ",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "NODE_ENV=development nodemon index.js",
     "prod": "NODE_ENV=production pm2 start index.js --name 'authentication' --watch",
-    "dev": "NODE_ENV=development nodemon index.js"
+    "dev": "NODE_ENV=development pm2 start index.js --name 'authentication-dev' --watch",
+    "local": "nodemon index.js"
   },
   "repository": {
     "type": "git",
