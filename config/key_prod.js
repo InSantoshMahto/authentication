@@ -1,4 +1,7 @@
 module.exports = {
+  // port
+  port: 8200,
+
   // db
   mongoURI: 'mongodb://onsi:onsi@12345@ds021915.mlab.com:21915/auth',
 

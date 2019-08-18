@@ -6,7 +6,7 @@ const logger = require('morgan');
 const config = require('./config'); // configuration
 const routes = require('./routes'); //  routing
 
-const PORT = process.env.PORT || 8500; // defining port number
+const PORT = process.env.PORT || config.port; // defining port number
 
 const app = express(); //creating express app
 
