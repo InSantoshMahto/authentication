@@ -37,8 +37,9 @@ router.use((err, req, res, next) => {
     next();
     return;
   }
+
   // console.log('Error handler:', err.stack);
-  res.status(err.code).json({
+  res.status(err.code || 500).json({
     success: false,
     error: { status: err.code, message: err.message, name: err.name },
   });

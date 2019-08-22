@@ -8,7 +8,7 @@ const errors = require('../../core/errors');
 const usersModel = require('../../models').users;
 const otpModel = require('../../models').otp;
 const core = require('../../core');
-const mongoDb = require('../../config').mongoURI;
+const mongoURI = require('../../config').mongoURI;
 
 const lib = {};
 
@@ -171,7 +171,7 @@ lib.init = async (req, res) => {
     throw err;
   } else {
     // check user not already exist
-    await mongoose.connect(mongoDb, { useNewUrlParser: true });
+    await mongoose.connect(mongoURI, { useNewUrlParser: true });
 
     // Get the default connection
     const db = mongoose.connection;

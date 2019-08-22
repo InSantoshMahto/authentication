@@ -1,2 +1,2 @@
 # auth
-GET https://api-dev.onsi.in/auth
+POST https://api-dev.onsi.in/auth/v1/register
