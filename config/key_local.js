@@ -1,6 +1,6 @@
 module.exports = {
   // port
-  port: 8585,
+  port: 8500,
 
   // db
   mongoURI: 'mongodb://127.0.0.1/auth_local',

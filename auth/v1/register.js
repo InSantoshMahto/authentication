@@ -6,7 +6,7 @@ const objectHash = require('object-hash');
 
 const errors = require('../../core/errors');
 const usersModel = require('../../models').users;
-const otpModel = require('../../models').otp;
+const otpsModel = require('../../models').otps;
 const core = require('../../core');
 const mongoURI = require('../../config').mongoURI;
 
@@ -171,7 +171,10 @@ lib.init = async (req, res) => {
     throw err;
   } else {
     // check user not already exist
-    await mongoose.connect(mongoURI, { useNewUrlParser: true });
+    await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      uri_decode_auth: true,
+    });
 
     // Get the default connection
     const db = mongoose.connection;
@@ -252,26 +255,28 @@ lib.init = async (req, res) => {
         .save()
         .then(dbRes => {
           // console.log('successfully inserted:', dbRes);
-          const _id = dbRes.id;
+          const user_id = dbRes.id;
           // generate otp
           const otp = core.otpGenerator(6); // console.log(`generated otp:\t`, otp);
           // send OTP
-          core.email.otp(_id, firstName, email, otp);
+          core.email.otp(user_id, firstName, email, otp);
           // update on db
-          const otpEmail = new otpModel({
+          const otpEmail = new otpsModel({
             otp,
-            user_id: _id,
-            receiver: email,
+            user_id,
+            receiver: [email],
             type: 'EMAIL',
           });
           otpEmail.save().then(dbRes => {
             console.info('INFO: otp saved on DB.:\t', dbRes._id);
           });
+
           // send response
           res.status(200).json({
             success: true,
             data: {
-              userName: userName,
+              user_id,
+              userName,
               type: 'EMAIL',
               message: 'otp has successfully send.',
             },

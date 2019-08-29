@@ -3,7 +3,7 @@ module.exports = {
   port: 8500,
 
   // db
-  mongoURI: 'mongodb://onsi:onsi@12345@ds021915.mlab.com:21915/auth_dev',
+  mongoURI: 'mongodb://onsi:onsi%4012345@ds021915.mlab.com:21915/auth_dev',
 
   // MIME json
   json: {

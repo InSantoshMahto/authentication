@@ -32,6 +32,7 @@ const users = new Schema({
   },
   remark: { type: String, lowercase: true, trim: true },
   createdAt: { type: Date, default: Date.now },
+  modifiedAt: { type: Date, default: Date.now },
 });
 
 lib.users = mongoose.model('users', users);
