@@ -5,9 +5,9 @@ const bcrypt = require('bcryptjs');
 const objectHash = require('object-hash');
 
 const errors = require('../../core/errors');
-const usersModel = require('../../models').users;
-const otpsModel = require('../../models').otps;
+const model = require('../../models');
 const core = require('../../core');
+const utils = require('../../utils');
 const mongoURI = require('../../config').mongoURI;
 
 const lib = {};
@@ -185,7 +185,7 @@ lib.init = async (req, res) => {
     const userExistence = { flag: false, type: null };
 
     // check user existence with mobile number
-    await usersModel.findOne({ userName: mobile }, (dbErr, docs) => {
+    await model.users.findOne({ userName: mobile }, (dbErr, docs) => {
       if (dbErr) {
         console.error(
           `ERROR: during checking the existence (WITH_MOBILE) of user into db.: ${dbErr}`
@@ -203,7 +203,7 @@ lib.init = async (req, res) => {
     });
 
     // check user existence with email
-    await usersModel.findOne({ userName: email }, (dbErr, docs) => {
+    await model.users.findOne({ userName: email }, (dbErr, docs) => {
       if (dbErr) {
         console.error(
           `ERROR: during checking the existence (WITH_EMAIL) of user into db.: ${dbErr}`
@@ -237,7 +237,7 @@ lib.init = async (req, res) => {
       });
     } else {
       // insert user details
-      const newUser = new usersModel({
+      const newUser = new model.users({
         userName,
         email,
         mobile,
@@ -257,11 +257,11 @@ lib.init = async (req, res) => {
           // console.log('successfully inserted:', dbRes);
           const user_id = dbRes.id;
           // generate otp
-          const otp = core.otpGenerator(6); // console.log(`generated otp:\t`, otp);
+          const otp = utils.otpGenerator(4); // console.log(`generated otp:\t`, otp);
           // send OTP
           core.email.otp(user_id, firstName, email, otp);
           // update on db
-          const otpEmail = new otpsModel({
+          const otpEmail = new model.otps({
             otp,
             user_id,
             receiver: [email],

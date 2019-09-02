@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 const errors = require('../../core/errors');
-const usersModel = require('../../models').users;
-const otpsModel = require('../../models').otps;
+const model = require('../../models');
 const core = require('../../core');
+const utils = require('../../utils');
 const mongoURI = require('../../config').mongoURI;
 
 const lib = {};
@@ -50,17 +51,22 @@ lib.verify = async (req, res) => {
     //Bind connection to error event (to get notification of connection errors)
     db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-    await otpsModel.findOne({ user_id, client_type }, (err, dbRes) => {
+    let otpDetails;
+
+    await model.otps.findOne({ user_id, client_type }, (err, dbRes) => {
       if (err) throw err;
       console.log(dbRes);
+      otpDetails = dbRes;
     });
 
-    // await otps.findOne()
+    if (otpDetails.otp == otp) {
+      // update remark
+      const remark = 'user registered And verified';
 
-    // update remark
-    const remark = 'user registered And verified';
-
-    res.status(200).json({ route: 'v1/verify', client_type, user_id, otp });
+      res.status(200).json({ route: 'v1/verify', client_type, user_id, otp });
+    } else {
+      res.status(200).json({ success: false, error: 'invalid OTP' });
+    }
   }
 };
 
