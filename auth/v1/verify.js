@@ -60,10 +60,19 @@ lib.verify = async (req, res) => {
     });
 
     if (otpDetails.otp == otp) {
-      // update remark
-      const remark = 'user registered And verified';
+      const now = moment(new Date()); //todays date
+      const end = moment(otpDetails.createdAt); // another date
+      const duration = moment.duration(now.diff(end));
+      const times = duration.asMinutes();
+      console.log(times);
+      if (times <= 10) {
+        // update remark
+        const remark = 'user registered And verified';
 
-      res.status(200).json({ route: 'v1/verify', client_type, user_id, otp });
+        res.status(200).json({ route: 'v1/verify', client_type, user_id, otp });
+      } else {
+        res.status(200).json({ success: false, error: 'OTP Expired' });
+      }
     } else {
       res.status(200).json({ success: false, error: 'invalid OTP' });
     }
