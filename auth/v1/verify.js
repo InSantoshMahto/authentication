@@ -12,13 +12,22 @@ lib.verify = async (req, res) => {
   let errMessage = [];
   let errFlag = false;
 
-  const { user_id, otp } = req.body;
+  const { user_id, otp, type } = req.body;
   const { client_type } = req.headers;
 
   // check clientType existence
   if (!client_type) {
     errFlag = true;
     errMessage.push('Client_Type header is required.');
+  }
+
+  // check Type existence
+  if (!type) {
+    errFlag = true;
+    errMessage.push('type is required.');
+  } else if (type === 'EMAIL' || type === 'MOBILE' || type === 'BOTH') {
+    errFlag = true;
+    errMessage.push('invalid type');
   }
 
   // check user_id existence
@@ -59,15 +68,21 @@ lib.verify = async (req, res) => {
       otpDetails = dbRes;
     });
 
-    if (otpDetails.otp == otp) {
+    if (otpDetails.otp == otp && otpDetails.isValid === true) {
       const now = moment(new Date()); //todays date
       const end = moment(otpDetails.createdAt); // another date
       const duration = moment.duration(now.diff(end));
       const times = duration.asMinutes();
       console.log(times);
       if (times <= 10) {
+        //TODO: update otp collections.
+
+        //TODO: updated users collection
+
         // update remark
         const remark = 'user registered And verified';
+
+        //TODO: send api response
 
         res.status(200).json({ route: 'v1/verify', client_type, user_id, otp });
       } else {
@@ -77,14 +92,6 @@ lib.verify = async (req, res) => {
       res.status(200).json({ success: false, error: 'invalid OTP' });
     }
   }
-};
-
-lib.verifyEmail = (req, res) => {
-  res.status(200).json({ route: 'v1/verify-email' });
-};
-
-lib.verifyMobile = (req, res) => {
-  res.status(200).json({ route: 'v1/verify-mobile' });
 };
 
 module.exports = lib;

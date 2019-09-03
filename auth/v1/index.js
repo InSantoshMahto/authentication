@@ -12,7 +12,5 @@ v1.forgetPassword = password.init;
 v1.updatePassword = password.init;
 v1.self = self.init;
 v1.verify = verify.verify;
-v1.verifyEmail = verify.verifyEmail;
-v1.verifyMobile = verify.verifyMobile;
 
 module.exports = v1;
