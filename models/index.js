@@ -1,9 +1,12 @@
+const mongoose = require('mongoose');
 const users = require('./users');
 const otps = require('./otps');
 
-const model = {};
+mongoose.set('useFindAndModify', false);
 
-model.users = users;
-model.otps = otps;
+const Model = {};
 
-module.exports = model;
+Model.users = users;
+Model.otps = otps;
+
+module.exports = Model;

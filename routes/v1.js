@@ -27,12 +27,6 @@ router.post('/update-password/:type', auth.updatePassword);
 // verify
 router.post('/verify', auth.verify);
 
-// verify email
-router.post('/verify-email', auth.verifyEmail);
-
-// verify mobile
-router.post('/verify-mobile', auth.verifyMobile);
-
 // self
 router.post('/self', auth.self);
 
