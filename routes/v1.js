@@ -28,6 +28,7 @@ router.post('/update-password/:type', auth.updatePassword);
 router.post('/verify', auth.verify);
 
 // self
+router.get('/self', auth.self);
 router.post('/self', auth.self);
 
 module.exports = router;

@@ -172,8 +172,8 @@ module.exports = {
     // if any error
     if (errFlag) {
       let err = new Error();
-      err.code = errors.statusCode[400].status;
-      err.name = errors.statusCode[400].name;
+      err.code = errors.statusCode[412].status;
+      err.name = errors.statusCode[412].name;
       err.message = errMessage.join(' ');
       throw err;
     } else {
@@ -263,10 +263,13 @@ module.exports = {
           .then(dbRes => {
             // console.log('successfully inserted:', dbRes);
             const user_id = dbRes.id;
+
             // generate otp
             const otp = utils.otpGenerator(4); // console.log(`generated otp:\t`, otp);
+
             // send OTP
             core.email.otp(user_id, firstName, email, otp);
+
             // update on db
             const otpEmail = new Model.otps({
               otp,

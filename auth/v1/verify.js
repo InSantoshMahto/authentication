@@ -46,10 +46,12 @@ module.exports = {
       errFlag = true;
       errMessage.push('otp is required.');
     }
+
+    // check error if exist then send error response
     if (errFlag) {
       let err = new Error();
-      err.code = errors.statusCode[400].status;
-      err.name = errors.statusCode[400].name;
+      err.code = errors.statusCode[412].status;
+      err.name = errors.statusCode[412].name;
       err.message = errMessage.join(' ');
       throw err;
     } else {
@@ -136,6 +138,7 @@ module.exports = {
  * @description use to delete the otp from otps collections
  */
 async function deleteOtp(_id) {
+  // eslint-disable-next-line no-unused-vars
   await Model.otps.findByIdAndDelete(_id, (err, dbRes) => {
     if (err) throw err;
     // console.log(dbRes);

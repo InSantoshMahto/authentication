@@ -1,9 +1,6 @@
-const lib = {};
-
-lib.init = (req, res) => {
-  const type = req.params.type;
-  console.log(`console logs: type`, type);
-  res.status(200).json({ route: 'v1/update password' });
+module.exports = {
+  init: async (req, res) => {
+    console.log(`console logs: res`, res);
+    console.log(`console logs: req`, req);
+  },
 };
-
-module.exports = lib;
