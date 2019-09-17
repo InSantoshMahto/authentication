@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const errors = require('../../core/errors');
 const Model = require('../../models');
+const jwt = require('jsonwebtoken');
 // const core = require('../../core');
 // const utils = require('../../utils');
 const mongoURI = require('../../config').mongoURI;
@@ -11,8 +12,8 @@ module.exports = {
     let errMessage = [];
     let errFlag = false;
 
-    let { user_id, otp, type } = req.body;
-    let { client_type } = req.headers;
+    let { user_id, otp, type, purpose } = req.body;
+    let client_type = req.header('Client-Type');
 
     // check clientType existence
     if (!client_type) {
@@ -47,6 +48,25 @@ module.exports = {
       errMessage.push('otp is required.');
     }
 
+    // decide purpose
+    if (!purpose) {
+      purpose = 'login';
+    } else {
+      purpose = purpose.toLowerCase();
+      if (
+        !purpose === 'forget-password' ||
+        !purpose === 'change-password' ||
+        !purpose === 'email-verification' ||
+        !purpose === 'mobile-verification' ||
+        !purpose === 'account-verification' ||
+        !purpose === 'user-verification' ||
+        !purpose === 'login'
+      ) {
+        errFlag = true;
+        errMessage.push('invalid verification purpose');
+      }
+    }
+
     // check error if exist then send error response
     if (errFlag) {
       let err = new Error();
@@ -72,18 +92,23 @@ module.exports = {
         if (err) throw err;
         otpDetails = dbRes;
       });
+      // console.log(`console logs: otpDetails`, otpDetails);
 
       if (!otpDetails) {
         res.status(400).json({
           success: false,
           error: 'There is No Active Session For Authentications',
         });
+      } else if (otpDetails.type !== type) {
+        res
+          .status(403)
+          .json({ success: false, error: 'invalid receiver type' });
       } else if (otpDetails.otp === otp) {
         const now = moment(new Date()); //todays date
         const end = moment(otpDetails.createdAt); // another date
         const duration = moment.duration(now.diff(end));
         const times = duration.asMinutes();
-        console.log(times);
+        // console.log(times);
         if (times <= 10) {
           // delete the existing otp from db
           await deleteOtp(otpDetails._id);
@@ -116,10 +141,20 @@ module.exports = {
             remark
           );
 
-          //TODO: send api response
-          res
-            .status(200)
-            .json({ success: true, data: { client_type, user_id } });
+          // generate token
+          const secret = `${'organizationId'}`;
+          const valid = 15 * 60 * 10000;
+          const info = {
+            purpose,
+            user_id: otpDetails.user_id,
+          };
+          const token = await generateAuthToken(secret, valid, info);
+
+          // send success response to the client
+          res.status(200).json({
+            success: true,
+            data: { client_type, user_id, purpose, token },
+          });
         } else {
           // delete the existing otp from db
           await deleteOtp(otpDetails._id);
@@ -131,6 +166,12 @@ module.exports = {
     }
   },
 };
+
+/**
+ * ***********************************************
+ * GLOBAL FUNCTIONS
+ * ***********************************************
+ */
 
 /**
  *deleteOtp
@@ -180,4 +221,17 @@ async function updateUsers(
       // console.log(dbRes);
     }
   );
+}
+
+/**
+ * generateAuthToken
+ * @param {sting} secret
+ * @param {string | number} valid
+ * @param {object} data
+ * @returns {string} token
+ * @description generate temporary token to identify the otp verification purpose
+ */
+async function generateAuthToken(secret, valid, data) {
+  const token = jwt.sign(data, secret, { expiresIn: valid });
+  return token;
 }

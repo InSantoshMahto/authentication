@@ -1,8 +1,25 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-const lib = {};
 
+/**
+ * schema for otps
+ */
+const otps = new Schema({
+  user_id: { type: Schema.Types.ObjectId },
+  otp: { type: String, minlength: 4, maxlength: 8 },
+  type: { type: Object, uppercase: true, trim: true, default: 'EMAIL' },
+  client_type: { type: String, uppercase: true, trim: true, default: 'WEB' },
+  receiver: { type: Array, default: [] },
+  purpose: { type: String, default: 'login' },
+  isValid: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now },
+  modifiedAt: { type: Date, default: Date.now },
+});
+
+/**
+ * schema for users
+ */
 const users = new Schema({
   userName: { type: String, lowercase: true, trim: true },
   email: { type: String, lowercase: true, trim: true },
@@ -35,6 +52,7 @@ const users = new Schema({
   modifiedAt: { type: Date, default: Date.now },
 });
 
-lib.users = mongoose.model('users', users);
-
-module.exports = lib.users;
+module.exports = {
+  otps: mongoose.model('otps', otps),
+  users: mongoose.model('users', users),
+};

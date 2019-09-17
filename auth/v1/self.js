@@ -6,17 +6,18 @@ module.exports = {
     let errMessage = [];
     let errFlag = false;
 
-    let { client_type, token } = req.headers;
+    let client_type = req.header('Client-Type');
+    let access_token = req.header('Access-Token');
 
     // check clientType existence
     if (!client_type) {
       errFlag = true;
       errMessage.push('Client_Type header is required.');
     }
-    // check token existence
-    if (!token) {
+    // check access_token existence
+    if (!access_token) {
       errFlag = true;
-      errMessage.push('token is required.');
+      errMessage.push('Access-Token header is required.');
     }
 
     // check error if exist then send error response
@@ -27,26 +28,25 @@ module.exports = {
       err.message = errMessage.join(' ');
       throw err;
     } else {
-      // validate token
-      const secret = `${'organizationId'}`;
-
       // invalid token - synchronous
       try {
-        const decoded = jwt.verify(token, secret);
-        console.log(`console logs: decoded`, decoded);
+        // validate access_token
+        const secret = `${'organizationId'}`;
+        const decoded = jwt.verify(access_token, secret);
+        // console.log(`console logs: decoded`, decoded);
         res.status(200).send({
           success: true,
           userName: decoded.userName,
           user_id: decoded.user_id,
         });
       } catch (err) {
-        // err if token is invalid
+        // err if access_token is invalid
         res.status(401).json({
           success: false,
           error: {
             status: errors.statusCode[401].status,
             name: errors.statusCode[401].name,
-            message: `invalid token`,
+            message: `invalid access token`,
           },
         });
       }

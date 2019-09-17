@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const users = require('./users');
-const otps = require('./otps');
+const auth = require('./auth');
 
+/**
+ * mongoose config
+ */
 mongoose.set('useFindAndModify', false);
 
-const Model = {};
-
-Model.users = users;
-Model.otps = otps;
-
-module.exports = Model;
+module.exports = {
+  users: auth.users,
+  otps: auth.otps,
+};

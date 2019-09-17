@@ -15,7 +15,7 @@ module.exports = {
     let errFlag = false;
 
     let { userName, password } = req.body;
-    let { client_type } = req.headers;
+    let { client_type } = req.header('Client-Type');
 
     // check clientType existence
     if (!client_type) {
@@ -176,14 +176,14 @@ module.exports = {
       } else {
         // generate token
         const secret = `${'organizationId'}`;
-        const Valid = `7d`;
+        const valid = `7d`;
         const token = jwt.sign(
           {
             userName,
             user_id: userDetails._id,
           },
           secret,
-          { expiresIn: Valid }
+          { expiresIn: valid }
         );
 
         // delete unnecessary data from userDetails objects
