@@ -3,7 +3,6 @@ const passwordValidator = require('password-validator');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const objectHash = require('object-hash');
-
 const errors = require('../../core/errors');
 const Model = require('../../models');
 const core = require('../../core');
@@ -26,7 +25,7 @@ module.exports = {
       password,
     } = req.body;
 
-    const { client_type } = req.headers;
+    let client_type = req.header('Client-Type');
 
     // formating the data
     middleName = middleName ? middleName : null;
@@ -268,15 +267,21 @@ module.exports = {
             const otp = utils.otpGenerator(4); // console.log(`generated otp:\t`, otp);
 
             // send OTP
-            core.email.otp(user_id, firstName, email, otp);
+            const brand = `ONSI`;
+            const domain = 'https://onsi.in';
+            const message = `verify your account by submitting the otp given below.`;
+
+            core.email.otp(brand, domain, firstName, email, message, otp);
 
             // update on db
             const otpEmail = new Model.otps({
               otp,
               user_id,
+              purpose: 'user-activation',
               receiver: [email],
               type: 'EMAIL',
             });
+
             otpEmail.save().then(dbRes => {
               console.info('INFO: otp saved on DB.:\t', dbRes._id);
             });

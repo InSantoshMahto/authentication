@@ -19,13 +19,17 @@ router.post('/login', auth.login);
 // forget password
 router.post('/forget-password', auth.forgetPassword);
 
-/**
- * @params type: forget  | change
- */
-router.post('/update-password/:type', auth.updatePassword);
+// update-password
+router.post('/update-password', auth.updatePassword);
+
+// change-password
+router.post('/change-password', auth.changePassword);
 
 // verify
 router.post('/verify', auth.verify);
+
+// resend otp
+router.post('/resendOtp', auth.resendOtp);
 
 // self
 router.post('/self', auth.self);

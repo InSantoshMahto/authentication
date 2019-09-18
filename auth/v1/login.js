@@ -15,7 +15,7 @@ module.exports = {
     let errFlag = false;
 
     let { userName, password } = req.body;
-    let { client_type } = req.header('Client-Type');
+    let client_type = req.header('Client-Type');
 
     // check clientType existence
     if (!client_type) {

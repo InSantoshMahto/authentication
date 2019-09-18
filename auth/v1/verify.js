@@ -49,18 +49,21 @@ module.exports = {
     }
 
     // decide purpose
+    console.log(`console logs: purpose`, purpose);
     if (!purpose) {
       purpose = 'login';
     } else {
       purpose = purpose.toLowerCase();
       if (
-        !purpose === 'forget-password' ||
-        !purpose === 'change-password' ||
-        !purpose === 'email-verification' ||
-        !purpose === 'mobile-verification' ||
-        !purpose === 'account-verification' ||
-        !purpose === 'user-verification' ||
-        !purpose === 'login'
+        !(
+          purpose === 'forget-password' ||
+          purpose === 'change-password' ||
+          purpose === 'email-verification' ||
+          purpose === 'mobile-verification' ||
+          purpose === 'account-enabling' ||
+          purpose === 'user-activation' ||
+          purpose === 'login'
+        )
       ) {
         errFlag = true;
         errMessage.push('invalid verification purpose');
@@ -113,7 +116,7 @@ module.exports = {
           // delete the existing otp from db
           await deleteOtp(otpDetails._id);
 
-          //TODO: update users collection
+          //update users collection
           let isEmailVerified = false;
           let isMobileVerified = false;
           // update account status
@@ -148,12 +151,17 @@ module.exports = {
             purpose,
             user_id: otpDetails.user_id,
           };
-          const token = await generateAuthToken(secret, valid, info);
+          const sessionToken = await generateAuthToken(secret, valid, info);
 
           // send success response to the client
           res.status(200).json({
             success: true,
-            data: { client_type, user_id, purpose, token },
+            data: {
+              'Client-Type': client_type,
+              user_id,
+              purpose,
+              sessionToken,
+            },
           });
         } else {
           // delete the existing otp from db
@@ -164,6 +172,13 @@ module.exports = {
         res.status(403).json({ success: false, error: 'invalid OTP' });
       }
     }
+  },
+  /**
+   * reSendOtp
+   * @description use to re send the existing otp.
+   */
+  resendOtp: async (req, res) => {
+    res.send({ route: 'resend otp' });
   },
 };
 

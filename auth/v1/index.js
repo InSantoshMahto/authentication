@@ -4,13 +4,13 @@ const register = require('./register'),
   self = require('./self'),
   verify = require('./verify');
 
-const v1 = {};
-
-v1.register = register.init;
-v1.login = login.init;
-v1.forgetPassword = password.init;
-v1.updatePassword = password.init;
-v1.self = self.init;
-v1.verify = verify.init;
-
-module.exports = v1;
+module.exports = {
+  register: register.init,
+  login: login.init,
+  forgetPassword: password.forget,
+  updatePassword: password.update,
+  changePassword: password.change,
+  self: self.init,
+  verify: verify.init,
+  resendOtp: verify.resendOtp,
+};

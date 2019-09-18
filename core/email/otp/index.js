@@ -1,14 +1,11 @@
 const nodemailer = require('nodemailer');
 const inlineBase64 = require('nodemailer-plugin-inline-base64');
 const ejs = require('ejs');
-// const mongoose = require('mongoose');
 
 const config = require('../../../config');
 
-// const Schema = mongoose.Schema;
-
 // async..await is not allowed in global scope, must use a wrapper
-module.exports = async function(_id, userName, to, otp) {
+module.exports = async function(brand, domain, firstName, to, message, otp) {
   const transporter = nodemailer.createTransport({
     service: 'zoho',
     auth: {
@@ -25,7 +22,7 @@ module.exports = async function(_id, userName, to, otp) {
 
   ejs.renderFile(
     __dirname + '/index.html',
-    { otp, userName },
+    { brand, domain, otp, firstName, message },
     async (err, html) => {
       if (err) {
         console.error(err);
@@ -50,5 +47,3 @@ module.exports = async function(_id, userName, to, otp) {
     }
   );
 };
-
-// main('tech@teckat.com', 'userName');
