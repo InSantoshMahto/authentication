@@ -178,6 +178,7 @@ module.exports = {
    * @description use to re send the existing otp.
    */
   resendOtp: async (req, res) => {
+    // TODO: validate user info
     res.send({ route: 'resend otp' });
   },
 };

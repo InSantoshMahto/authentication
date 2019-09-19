@@ -7,6 +7,7 @@ const Model = require('../../models');
 const core = require('../../core');
 const utils = require('../../utils');
 const mongoURI = require('../../config').mongoURI;
+
 module.exports = {
   forget: async (req, res) => {
     let errMessage = [];
