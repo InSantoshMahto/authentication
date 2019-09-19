@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
-// const moment = require('moment');
+const jwt = require('jsonwebtoken');
 const errors = require('../../core/errors');
 const Model = require('../../models');
 const core = require('../../core');
@@ -113,13 +113,10 @@ module.exports = {
 
   change: async (req, res) => {
     // TODO: old_password, new Password
-    console.log(`console logs: res`, res);
-    console.log(`console logs: req`, req);
     res.send({ type: 'change' });
   },
 
   update: async (req, res) => {
-    // TODO: old_password, new Password
     let errMessage = [];
     let errFlag = false;
 
@@ -243,12 +240,60 @@ module.exports = {
       //Bind connection to error event (to get notification of connection errors)
       db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-      // TODO: validate sessionToken using jwt
+      // validate sessionToken using jwt
+      try {
+        // validate sessionToken
+        const secret = `${'organizationId'}`;
+        const decoded = jwt.verify(sessionToken, secret);
+        // console.log(`console logs: decoded`, decoded);
 
-      // TODO: update new password to the db
+        // update new password to the db
+        if (
+          user_id === decoded.user_id &&
+          decoded.purpose === 'forget-password'
+        ) {
+          await Model.users.findByIdAndUpdate(
+            user_id,
+            {
+              password,
+            },
+            // eslint-disable-next-line no-unused-vars
+            (err, dbRes) => {
+              if (err) throw err;
+              // console.log(dbRes);
+            }
+          );
 
-      // TODO: send success response
-      res.send({ type: 'update' });
+          // send success response
+          res.status(200).send({
+            success: true,
+            data: {
+              user_id,
+              message: 'your password changed Successfully',
+            },
+          });
+        } else {
+          // if invalid Token Credentials eg. Purpose or user_id
+          res.status(401).json({
+            success: false,
+            error: {
+              status: errors.statusCode[401].status,
+              name: errors.statusCode[401].name,
+              message: `Invalid Token Credentials eg. Purpose or user_id`,
+            },
+          });
+        }
+      } catch (err) {
+        // err if sessionToken is invalid
+        res.status(401).json({
+          success: false,
+          error: {
+            status: errors.statusCode[401].status,
+            name: errors.statusCode[401].name,
+            message: `invalid session token`,
+          },
+        });
+      }
     }
   },
 };
