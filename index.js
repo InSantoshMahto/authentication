@@ -10,6 +10,10 @@ const PORT = process.env.PORT || config.port; // defining port number
 
 const app = express(); //creating express app
 
+app.disable('etag');
+
+app.disable('x-powered-by');
+
 // configuration for MIME type
 app.use(express.json(config.json));
 
