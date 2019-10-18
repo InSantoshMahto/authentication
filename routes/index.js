@@ -7,6 +7,9 @@ const v2 = require('./v2.routes');
 
 const router = express.Router(config.router);
 
+// middleware
+router.use(utils.middleware.acl);
+
 // origin
 router.all('/', (req, res) => {
   res

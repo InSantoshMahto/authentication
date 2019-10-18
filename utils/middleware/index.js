@@ -1,3 +1,3 @@
 module.exports = {
-  ping: require('./acl.middleware'),
+  acl: require('./acl.middleware'),
 };

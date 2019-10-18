@@ -1,7 +1,7 @@
 const express = require('express');
 
 const config = require('../config');
-const auth = require('../auth').v1;
+const auth = require('../services/auth').v1;
 
 const router = express.Router(config.router);
 
