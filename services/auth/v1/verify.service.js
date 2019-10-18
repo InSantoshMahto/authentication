@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
-const utils = require('../../utils');
-const Model = require('../../models');
+const utils = require('../../../utils');
+const Model = require('../../../models');
 const jwt = require('jsonwebtoken');
 // const utils = require('../../utils');
-const mongoURI = require('../../config').mongoURI;
+const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
   init: async (req, res) => {

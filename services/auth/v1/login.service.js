@@ -3,9 +3,9 @@ const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 // const moment = require('moment');
-const utils = require('../../utils');
-const Model = require('../../models');
-const mongoURI = require('../../config').mongoURI;
+const utils = require('../../../utils');
+const Model = require('../../../models');
+const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
   init: async (req, res) => {

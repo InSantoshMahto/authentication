@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const auth = require('./auth');
+const auth = require('./auth.model');
 
 /**
  * mongoose config

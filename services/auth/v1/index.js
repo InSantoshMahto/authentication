@@ -1,9 +1,9 @@
-const register = require('./register'),
-  login = require('./login'),
-  password = require('./password'),
-  self = require('./self'),
-  verify = require('./verify'),
-  profile = require('./profile');
+const register = require('./register.service'),
+  login = require('./login.service'),
+  password = require('./password.service'),
+  self = require('./self.service'),
+  verify = require('./verify.service'),
+  profile = require('./profile.service');
 
 module.exports = {
   register: register.init,

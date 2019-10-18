@@ -1,1 +1,3 @@
-// TODO: prepare constant
+module.exports = {
+  developer: 'INSANTOSHMAHTO',
+};

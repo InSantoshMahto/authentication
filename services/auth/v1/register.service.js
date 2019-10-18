@@ -3,9 +3,9 @@ const passwordValidator = require('password-validator');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const objectHash = require('object-hash');
-const Model = require('../../models');
-const utils = require('../../utils');
-const mongoURI = require('../../config').mongoURI;
+const Model = require('../../../models');
+const utils = require('../../../utils');
+const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
   init: async (req, res) => {

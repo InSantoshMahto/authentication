@@ -2,8 +2,8 @@ const express = require('express');
 
 const config = require('../config');
 const utils = require('../utils');
-const v1 = require('./v1');
-const v2 = require('./v2');
+const v1 = require('./v1.routes');
+const v2 = require('./v2.routes');
 
 const router = express.Router(config.router);
 

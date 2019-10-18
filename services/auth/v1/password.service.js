@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const Model = require('../../models');
-const utils = require('../../utils');
-const mongoURI = require('../../config').mongoURI;
+const Model = require('../../../models');
+const utils = require('../../../utils');
+const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
   forget: async (req, res) => {

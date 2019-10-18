@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const utils = require('../../utils');
+const utils = require('../../../utils');
 
 module.exports = {
   init: async (req, res) => {
