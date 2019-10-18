@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
-const errors = require('../../core/errors');
+const utils = require('../../utils');
 const Model = require('../../models');
 const jwt = require('jsonwebtoken');
-// const core = require('../../core');
 // const utils = require('../../utils');
 const mongoURI = require('../../config').mongoURI;
 
@@ -73,8 +72,8 @@ module.exports = {
     // check error if exist then send error response
     if (errFlag) {
       let err = new Error();
-      err.code = errors.statusCode[412].status;
-      err.name = errors.statusCode[412].name;
+      err.code = utils.statusCode[412].status;
+      err.name = utils.statusCode[412].name;
       err.message = errMessage.join(' ');
       throw err;
     } else {
@@ -87,7 +86,7 @@ module.exports = {
       // Get the default connection
       const db = mongoose.connection;
 
-      //Bind connection to error event (to get notification of connection errors)
+      //Bind connection to error event (to get notification of connection statusCode)
       db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
       let otpDetails;

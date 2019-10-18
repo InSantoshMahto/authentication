@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const errors = require('../../core/errors');
+const utils = require('../../utils');
 
 module.exports = {
   init: async (req, res) => {
@@ -23,8 +23,8 @@ module.exports = {
     // check error if exist then send error response
     if (errFlag) {
       let err = new Error();
-      err.code = errors.statusCode[412].status;
-      err.name = errors.statusCode[412].name;
+      err.code = utils.statusCode[412].status;
+      err.name = utils.statusCode[412].name;
       err.message = errMessage.join(' ');
       throw err;
     } else {
@@ -44,8 +44,8 @@ module.exports = {
         res.status(401).json({
           success: false,
           error: {
-            status: errors.statusCode[401].status,
-            name: errors.statusCode[401].name,
+            status: utils.statusCode[401].status,
+            name: utils.statusCode[401].name,
             message: `invalid access token`,
           },
         });

@@ -3,9 +3,7 @@ const passwordValidator = require('password-validator');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const objectHash = require('object-hash');
-const errors = require('../../core/errors');
 const Model = require('../../models');
-const core = require('../../core');
 const utils = require('../../utils');
 const mongoURI = require('../../config').mongoURI;
 
@@ -171,8 +169,8 @@ module.exports = {
     // if any error
     if (errFlag) {
       let err = new Error();
-      err.code = errors.statusCode[412].status;
-      err.name = errors.statusCode[412].name;
+      err.code = utils.statusCode[412].status;
+      err.name = utils.statusCode[412].name;
       err.message = errMessage.join(' ');
       throw err;
     } else {
@@ -185,7 +183,7 @@ module.exports = {
       // Get the default connection
       const db = mongoose.connection;
 
-      //Bind connection to error event (to get notification of connection errors)
+      //Bind connection to error event (to get notification of connection statusCode)
       db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
       const userExistence = { flag: false, type: null };
@@ -197,9 +195,9 @@ module.exports = {
             `ERROR: during checking the existence (WITH_MOBILE) of user into db.: ${dbErr}`
           );
           const err = new Error();
-          err.code = errors.statusCode[500].status;
-          err.name = errors.statusCode[500].name;
-          err.message = errors.statusCode[500].message;
+          err.code = utils.statusCode[500].status;
+          err.name = utils.statusCode[500].name;
+          err.message = utils.statusCode[500].message;
           throw err;
         }
         if (docs) {
@@ -215,9 +213,9 @@ module.exports = {
             `ERROR: during checking the existence (WITH_EMAIL) of user into db.: ${dbErr}`
           );
           const err = new Error();
-          err.code = errors.statusCode[500].status;
-          err.name = errors.statusCode[500].name;
-          err.message = errors.statusCode[500].message;
+          err.code = utils.statusCode[500].status;
+          err.name = utils.statusCode[500].name;
+          err.message = utils.statusCode[500].message;
           throw err;
         }
         if (docs) {
@@ -233,11 +231,11 @@ module.exports = {
           `WARNING: user already exist with ${userExistence.type}: ${message}.`
         );
 
-        res.status(errors.statusCode[400].status).json({
+        res.status(utils.statusCode[400].status).json({
           success: false,
           error: {
-            status: errors.statusCode[400].status,
-            name: errors.statusCode[400].name,
+            status: utils.statusCode[400].status,
+            name: utils.statusCode[400].name,
             message: `user already exist with ${userExistence.type}: ${message}.`,
           },
         });
@@ -271,7 +269,7 @@ module.exports = {
             const domain = 'https://onsi.in';
             const message = `verify your account by submitting the otp given below.`;
 
-            core.email.otp(brand, domain, firstName, email, message, otp);
+            utils.email.otp(brand, domain, firstName, email, message, otp);
 
             // update on db
             const otpEmail = new Model.otps({
@@ -302,9 +300,9 @@ module.exports = {
               `ERROR:  during inserting the data into db.: ${dbRrr}`
             );
             const err = new Error();
-            err.code = errors.statusCode[500].status;
-            err.name = errors.statusCode[500].name;
-            err.message = errors.statusCode[500].message;
+            err.code = utils.statusCode[500].status;
+            err.name = utils.statusCode[500].name;
+            err.message = utils.statusCode[500].message;
             throw err;
           });
       }

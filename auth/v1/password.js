@@ -2,9 +2,7 @@ const mongoose = require('mongoose');
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const errors = require('../../core/errors');
 const Model = require('../../models');
-const core = require('../../core');
 const utils = require('../../utils');
 const mongoURI = require('../../config').mongoURI;
 
@@ -30,8 +28,8 @@ module.exports = {
     // check error if exist then send error response
     if (errFlag) {
       let err = new Error();
-      err.code = errors.statusCode[412].status;
-      err.name = errors.statusCode[412].name;
+      err.code = utils.statusCode[412].status;
+      err.name = utils.statusCode[412].name;
       err.message = errMessage.join(' ');
       throw err;
     } else {
@@ -44,7 +42,7 @@ module.exports = {
       // Get the default connection
       const db = mongoose.connection;
 
-      //Bind connection to error event (to get notification of connection errors)
+      //Bind connection to error event (to get notification of connection statusCode)
       db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
       let userDetails;
@@ -62,8 +60,8 @@ module.exports = {
         res.status(400).json({
           success: false,
           error: {
-            status: errors.statusCode[400].status,
-            name: errors.statusCode[400].name,
+            status: utils.statusCode[400].status,
+            name: utils.statusCode[400].name,
             message: `user don't exist.`,
           },
         });
@@ -76,7 +74,7 @@ module.exports = {
         const domain = 'https://onsi.in';
         const message = `submit your otp to move towards next step.`;
 
-        core.email.otp(
+        utils.email.otp(
           brand,
           domain,
           userDetails.firstName,
@@ -224,8 +222,8 @@ module.exports = {
     // check error if exist then send error response
     if (errFlag) {
       let err = new Error();
-      err.code = errors.statusCode[412].status;
-      err.name = errors.statusCode[412].name;
+      err.code = utils.statusCode[412].status;
+      err.name = utils.statusCode[412].name;
       err.message = errMessage.join(' ');
       throw err;
     } else {
@@ -238,7 +236,7 @@ module.exports = {
       // Get the default connection
       const db = mongoose.connection;
 
-      //Bind connection to error event (to get notification of connection errors)
+      //Bind connection to error event (to get notification of connection statusCode)
       db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
       // validate sessionToken using jwt
@@ -278,8 +276,8 @@ module.exports = {
           res.status(401).json({
             success: false,
             error: {
-              status: errors.statusCode[401].status,
-              name: errors.statusCode[401].name,
+              status: utils.statusCode[401].status,
+              name: utils.statusCode[401].name,
               message: `Invalid Token Credentials eg. Purpose or user_id`,
             },
           });
@@ -289,8 +287,8 @@ module.exports = {
         res.status(401).json({
           success: false,
           error: {
-            status: errors.statusCode[401].status,
-            name: errors.statusCode[401].name,
+            status: utils.statusCode[401].status,
+            name: utils.statusCode[401].name,
             message: `invalid session token`,
           },
         });

@@ -1,8 +1,7 @@
 const express = require('express');
 
 const config = require('../config');
-const errors = require('../core/errors');
-const success = require('../core/success');
+const utils = require('../utils');
 const v1 = require('./v1');
 const v2 = require('./v2');
 
@@ -11,7 +10,7 @@ const router = express.Router(config.router);
 // origin
 router.all('/', (req, res) => {
   res
-    .status(success.statusCode[200].status)
+    .status(utils.statusCode[200].status)
     .json({ success: true, data: 'auth api working fine.' });
 });
 
@@ -25,9 +24,9 @@ router.use('/v2', v2);
 // eslint-disable-next-line no-unused-vars
 router.all('/*', (req, res) => {
   let err = new Error();
-  err.code = errors.statusCode[404].status;
-  err.name = errors.statusCode[404].name;
-  err.message = errors.statusCode[404].message;
+  err.code = utils.statusCode[404].status;
+  err.name = utils.statusCode[404].name;
+  err.message = utils.statusCode[404].message;
   throw err;
 });
 
@@ -40,7 +39,7 @@ router.use((err, req, res, next) => {
 
   // console.log('Error handler:', err.stack);
   res.status(err.code || 500).json({
-    success: false,
+    statusCode: false,
     error: { status: err.code, message: err.message, name: err.name },
   });
 });
