@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 if (process.env.NODE_ENV === 'production') {
   // production config
   console.info('INFO: Running on PRODUCTION Environments');
@@ -11,3 +14,10 @@ if (process.env.NODE_ENV === 'production') {
   console.info('INFO: Running on LOCAL Environments');
   module.exports = require('./key_local.config');
 }
+
+// export constants.
+module.exports.constant = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'constants.json'), {
+    encoding: 'utf-8',
+  })
+);

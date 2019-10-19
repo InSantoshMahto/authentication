@@ -50,18 +50,19 @@ module.exports = {
     // decide purpose
     console.log(`console logs: purpose`, purpose);
     if (!purpose) {
-      purpose = 'login';
+      purpose = 'LOGIN';
     } else {
-      purpose = purpose.toLowerCase();
+      purpose = purpose.toUpperCase();
+      console.log(`console logs: purpose`, purpose);
       if (
         !(
-          purpose === 'forget-password' ||
-          purpose === 'change-password' ||
-          purpose === 'email-verification' ||
-          purpose === 'mobile-verification' ||
-          purpose === 'account-enabling' ||
-          purpose === 'user-activation' ||
-          purpose === 'login'
+          purpose === 'FORGET_PASSWORD' ||
+          purpose === 'CHANGE_PASSWORD' ||
+          purpose === 'EMAIL_VERIFICATION' ||
+          purpose === 'MOBILE_VERIFICATION' ||
+          purpose === 'ACCOUNT_ENABLING' ||
+          purpose === 'USER_ACTIVATION' ||
+          purpose === 'LOGIN'
         )
       ) {
         errFlag = true;
@@ -158,7 +159,6 @@ module.exports = {
             data: {
               'Client-Type': client_type,
               user_id,
-              purpose,
               sessionToken,
             },
           });

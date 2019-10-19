@@ -32,7 +32,7 @@ router.post('/verify', auth.verify);
 router.post('/resendOtp', auth.resendOtp);
 
 // self
-router.post('/self', auth.self);
+router.get('/self', auth.self);
 
 // getProfile
 router.get('/getProfile', auth.getProfile);

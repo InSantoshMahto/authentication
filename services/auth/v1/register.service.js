@@ -13,6 +13,7 @@ module.exports = {
     let errFlag = false;
 
     let {
+      privilegeType,
       firstName,
       middleName,
       lastName,
@@ -35,6 +36,15 @@ module.exports = {
     if (!client_type) {
       errFlag = true;
       errMessage.push('Client_Type header is required.');
+    }
+
+    // privilegeType validation
+    if (!privilegeType) {
+      errFlag = true;
+      errMessage.push('privilegeType is required.');
+    } else if (privilegeType.toUpperCase().indexOf('CUSTOMER') === -1) {
+      errFlag = true;
+      errMessage.push('invalid privilegeType');
     }
 
     // first name validation
@@ -275,7 +285,7 @@ module.exports = {
             const otpEmail = new Model.otps({
               otp,
               user_id,
-              purpose: 'user-activation',
+              purpose: 'USER_ACTIVATION',
               receiver: [email],
               type: 'EMAIL',
             });

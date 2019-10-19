@@ -23,7 +23,12 @@ const otps = new Schema({
 const users = new Schema({
   userName: { type: String, lowercase: true, trim: true },
   email: { type: String, lowercase: true, trim: true },
-  type: { type: String, lowercase: true, trim: true, default: 'customer' }, // supper-admin or admin or client or customer (ACL)
+  privilegeType: {
+    type: String,
+    lowercase: true,
+    trim: true,
+    default: 'CUSTOMER',
+  }, // SUPPER_ADMIN or ADMIN or CLIENT or CUSTOMER (ACL)
   mobile: {
     type: String,
     minlength: 10,

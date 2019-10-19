@@ -1,0 +1,17 @@
+{
+  "acl": [
+    "SUPPER_ADMIN",
+    "ADMIN",
+    "CLIENT",
+    "CUSTOMER"
+  ],
+  "sessionType": [
+    "FORGET_PASSWORD",
+    "CHANGE_PASSWORD",
+    "EMAIL_VERIFICATION",
+    "MOBILE_VERIFICATION",
+    "ACCOUNT_ENABLING",
+    "USER_ACTIVATION",
+    "LOGIN"
+  ]
+}

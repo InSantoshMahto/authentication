@@ -10,25 +10,20 @@ const PORT = process.env.PORT || config.port; // defining port number
 
 const app = express(); //creating express app
 
-app.disable('etag');
+app.disable('etag'); // disable etag
 
-app.disable('x-powered-by');
+app.disable('x-powered-by'); // disable x-powered-by
 
-// configuration for MIME type
-app.use(express.json(config.json));
+app.use(express.json(config.json)); // configuration for MIME type
 
-// for logging the routes
-app.use(logger('dev'));
+app.use(logger('dev')); // for logging the routes
 
-// for dotenv
-if (dotenv.error) throw dotenv.error;
+if (dotenv.error) throw dotenv.error; // for dotenv
 console.info(`key added in env by dotenv are:\n`, dotenv.parsed);
 
-// public directory setup
-app.use(express.static(path.join(__dirname, 'public'), config.static));
+app.use(express.static(path.join(__dirname, 'public'), config.static)); // public directory setup
 
-/* ======================= set up  for routes ========================== */
+/* *********************** set up  for routes *********************** */
 app.use('/', routes);
 
-// listening port number
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+app.listen(PORT, () => console.log(`Listening on ${PORT}`)); // listening port number

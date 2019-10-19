@@ -7,17 +7,19 @@ module.exports = {
     let errFlag = false;
 
     let client_type = req.header('Client-Type');
-    let access_token = req.header('Access-Token');
+    let authorizationToken = req.header('Authorization');
 
     // check clientType existence
     if (!client_type) {
       errFlag = true;
       errMessage.push('Client_Type header is required.');
     }
-    // check access_token existence
-    if (!access_token) {
+    // check authorizationToken existence
+    if (!authorizationToken) {
       errFlag = true;
-      errMessage.push('Access-Token header is required.');
+      errMessage.push('Authorization header is required.');
+    } else {
+      authorizationToken = authorizationToken.split(' ')[1];
     }
 
     // check error if exist then send error response
@@ -30,17 +32,15 @@ module.exports = {
     } else {
       // invalid token - synchronous
       try {
-        // validate access_token
+        // validate authorizationToken
         const secret = `${'organizationId'}`;
-        const decoded = jwt.verify(access_token, secret);
-        // console.log(`console logs: decoded`, decoded);
+        const decoded = jwt.verify(authorizationToken, secret);
         res.status(200).send({
           success: true,
-          userName: decoded.userName,
-          user_id: decoded.user_id,
+          data: decoded.userDetails,
         });
       } catch (err) {
-        // err if access_token is invalid
+        // err if authorizationToken is invalid
         res.status(401).json({
           success: false,
           error: {

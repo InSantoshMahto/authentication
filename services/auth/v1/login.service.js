@@ -175,10 +175,15 @@ module.exports = {
         // generate token
         const secret = `${'organizationId'}`;
         const valid = `7d`;
-        const token = jwt.sign(
+
+        delete userDetails.hash;
+        delete userDetails.createdAt;
+        delete userDetails.modifiedAt;
+        delete userDetails.__v;
+
+        const authorizationToken = jwt.sign(
           {
-            userName,
-            user_id: userDetails._id,
+            userDetails,
           },
           secret,
           { expiresIn: valid }
@@ -190,7 +195,7 @@ module.exports = {
         res.status(200).json({
           success: true,
           data: {
-            token,
+            authorizationToken,
             userDetails: userDetails,
           },
         });
