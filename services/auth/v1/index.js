@@ -1,7 +1,6 @@
 const register = require('./register.service'),
   login = require('./login.service'),
   password = require('./password.service'),
-  self = require('./self.service'),
   verify = require('./verify.service'),
   profile = require('./profile.service');
 
@@ -11,7 +10,7 @@ module.exports = {
   forgetPassword: password.forget,
   updatePassword: password.update,
   changePassword: password.change,
-  self: self.init,
+  self: require('./self.service'),
   verify: verify.init,
   resendOtp: verify.resendOtp,
   getProfile: profile.getProfile,

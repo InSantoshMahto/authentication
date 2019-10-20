@@ -1,14 +1,12 @@
 const validator = require('validator');
 const passwordValidator = require('password-validator');
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const objectHash = require('object-hash');
 const Model = require('../../../models');
 const utils = require('../../../utils');
-const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
-  init: async (req, res) => {
+  init: async (req, res, next) => {
     let errMessage = [];
     let errFlag = false;
 
@@ -178,23 +176,9 @@ module.exports = {
 
     // if any error
     if (errFlag) {
-      let err = new Error();
-      err.code = utils.statusCode[412].status;
-      err.name = utils.statusCode[412].name;
-      err.message = errMessage.join(' ');
-      throw err;
+      return next({ status: 412, message: errMessage.join(' ') });
     } else {
-      // check user not already exist
-      await mongoose.connect(mongoURI, {
-        useNewUrlParser: true,
-        uri_decode_auth: true,
-      });
-
-      // Get the default connection
-      const db = mongoose.connection;
-
-      //Bind connection to error event (to get notification of connection statusCode)
-      db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+      // // check user not already exist
 
       const userExistence = { flag: false, type: null };
 
@@ -204,11 +188,10 @@ module.exports = {
           console.error(
             `ERROR: during checking the existence (WITH_MOBILE) of user into db.: ${dbErr}`
           );
-          const err = new Error();
-          err.code = utils.statusCode[500].status;
-          err.name = utils.statusCode[500].name;
-          err.message = utils.statusCode[500].message;
-          throw err;
+          return next({
+            status: 500,
+            message: `ERROR: during checking the existence (WITH_MOBILE) of user into db.: ${dbErr}`,
+          });
         }
         if (docs) {
           userExistence.flag = true;
@@ -222,11 +205,10 @@ module.exports = {
           console.error(
             `ERROR: during checking the existence (WITH_EMAIL) of user into db.: ${dbErr}`
           );
-          const err = new Error();
-          err.code = utils.statusCode[500].status;
-          err.name = utils.statusCode[500].name;
-          err.message = utils.statusCode[500].message;
-          throw err;
+          return next({
+            status: 500,
+            message: `ERROR: during checking the existence (WITH_EMAIL) of user into db.: ${dbErr}`,
+          });
         }
         if (docs) {
           userExistence.flag = true;
@@ -241,13 +223,9 @@ module.exports = {
           `WARNING: user already exist with ${userExistence.type}: ${message}.`
         );
 
-        res.status(utils.statusCode[400].status).json({
-          success: false,
-          error: {
-            status: utils.statusCode[400].status,
-            name: utils.statusCode[400].name,
-            message: `user already exist with ${userExistence.type}: ${message}.`,
-          },
+        return next({
+          status: 400,
+          message: `user already exist with ${userExistence.type}: ${message}.`,
         });
       } else {
         // insert user details
@@ -309,11 +287,10 @@ module.exports = {
             console.error(
               `ERROR:  during inserting the data into db.: ${dbRrr}`
             );
-            const err = new Error();
-            err.code = utils.statusCode[500].status;
-            err.name = utils.statusCode[500].name;
-            err.message = utils.statusCode[500].message;
-            throw err;
+            return next({
+              status: 500,
+              message: `ERROR:  during inserting the data into db.: ${dbRrr}`,
+            });
           });
       }
     }

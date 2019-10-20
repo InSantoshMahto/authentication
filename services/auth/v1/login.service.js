@@ -1,14 +1,11 @@
-const mongoose = require('mongoose');
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const moment = require('moment');
 const utils = require('../../../utils');
 const Model = require('../../../models');
-const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
-  init: async (req, res) => {
+  init: async (req, res, next) => {
     let errMessage = [];
     let errFlag = false;
 
@@ -103,26 +100,10 @@ module.exports = {
 
     // check error if exist then send error response
     if (errFlag) {
-      let err = new Error();
-      err.code = utils.statusCode[412].status;
-      err.name = utils.statusCode[412].name;
-      err.message = errMessage.join(' ');
-      throw err;
+      return next({ status: 412, message: errMessage.join(' ') });
     } else {
       // check user not already exist
-      await mongoose.connect(mongoURI, {
-        useNewUrlParser: true,
-        uri_decode_auth: true,
-      });
-
-      // Get the default connection
-      const db = mongoose.connection;
-
-      //Bind connection to error event (to get notification of connection statusCode)
-      db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
       let userDetails;
-
       // get user details by using userName
       await Model.users.findOne({ userName }, (err, dbRes) => {
         if (err) throw err;
@@ -176,11 +157,9 @@ module.exports = {
         const secret = `${'organizationId'}`;
         const valid = `7d`;
 
-        delete userDetails.hash;
-        delete userDetails.createdAt;
-        delete userDetails.modifiedAt;
-        delete userDetails.__v;
-
+        // delete unnecessary data from userDetails objects
+        userDetails.hash = userDetails.createdAt = userDetails.modifiedAt = userDetails.__v = undefined;
+        // generate token
         const authorizationToken = jwt.sign(
           {
             userDetails,
@@ -190,7 +169,7 @@ module.exports = {
         );
 
         // delete unnecessary data from userDetails objects
-        userDetails.hash = userDetails.modifiedAt = userDetails.password = userDetails.isAccountStatus = userDetails.isAccountVerify = userDetails.remark = undefined;
+        userDetails.privilegeType = userDetails.password = undefined;
         // send token with userDetails
         res.status(200).json({
           success: true,

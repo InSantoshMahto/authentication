@@ -1,2 +1,2 @@
 # auth
-POST https://api-dev.onsi.in/auth/v1/register
+POST http://localhost:8500/v1/changePassword

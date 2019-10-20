@@ -1,7 +1,9 @@
 const express = require('express');
 
 const config = require('../config');
-const auth = require('../services/auth').v1;
+const services = require('../services');
+const auth = services.auth.v1;
+const middleware = services.middleware;
 
 const router = express.Router(config.router);
 
@@ -23,7 +25,11 @@ router.post('/forgetPassword', auth.forgetPassword);
 router.post('/updatePassword', auth.updatePassword);
 
 // change-password
-router.post('/changePassword', auth.changePassword);
+router.post(
+  '/changePassword',
+  services.middleware.authorization,
+  auth.changePassword
+);
 
 // verify
 router.post('/verify', auth.verify);

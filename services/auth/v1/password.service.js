@@ -1,13 +1,11 @@
-const mongoose = require('mongoose');
 const passwordValidator = require('password-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Model = require('../../../models');
 const utils = require('../../../utils');
-const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
-  forget: async (req, res) => {
+  forget: async (req, res, next) => {
     let errMessage = [];
     let errFlag = false;
 
@@ -27,23 +25,9 @@ module.exports = {
     }
     // check error if exist then send error response
     if (errFlag) {
-      let err = new Error();
-      err.code = utils.statusCode[412].status;
-      err.name = utils.statusCode[412].name;
-      err.message = errMessage.join(' ');
-      throw err;
+      return next({ status: 412, message: errMessage.join(' ') });
     } else {
       // check user not already exist
-      await mongoose.connect(mongoURI, {
-        useNewUrlParser: true,
-        uri_decode_auth: true,
-      });
-
-      // Get the default connection
-      const db = mongoose.connection;
-
-      //Bind connection to error event (to get notification of connection statusCode)
-      db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
       let userDetails;
 
@@ -57,14 +41,7 @@ module.exports = {
       // check user existence in collections. if not then send 400 error
       if (!userDetails) {
         // user does not exist
-        res.status(400).json({
-          success: false,
-          error: {
-            status: utils.statusCode[400].status,
-            name: utils.statusCode[400].name,
-            message: `user don't exist.`,
-          },
-        });
+        return next({ status: 400, message: `user don't exist.` });
       } else {
         // generate otp
         const otp = utils.otpGenerator(4);
@@ -110,10 +87,10 @@ module.exports = {
     }
   },
 
-  change: async (req, res) => {
-    // TODO: old_password, new Password
+  change: async (req, res, next) => {
     let errMessage = [];
     let errFlag = false;
+    let { _id } = req.userDetails;
     let { password, oldPassword } = req.body;
     let client_type = req.header('Client-Type');
     // check clientType existence
@@ -208,82 +185,41 @@ module.exports = {
     }
     // check error if exist then send error response
     if (errFlag) {
-      let err = new Error();
-      err.code = utils.statusCode[412].status;
-      err.name = utils.statusCode[412].name;
-      err.message = errMessage.join(' ');
-      throw err;
+      return next({ status: 412, message: errMessage.join(' ') });
     } else {
-      // check user not already exist
-      await mongoose.connect(mongoURI, {
-        useNewUrlParser: true,
-        uri_decode_auth: true,
-      });
-
-      // Get the default connection
-      const db = mongoose.connection;
-
-      //Bind connection to error event (to get notification of connection statusCode)
-      db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-      // TODO: start from here. create db connection server. create token validator api
-      // validate sessionToken using jwt
-      try {
-        // validate sessionToken
-        const secret = `${'organizationId'}`;
-        const decoded = jwt.verify(sessionToken, secret);
-        // console.log(`console logs: decoded`, decoded);
-
+      if (!bcrypt.compareSync(oldPassword, req.userDetails.password)) {
+        // if password does not match
+        return next({
+          status: 400,
+          message: `Password Not Matched with oldPassword`,
+        });
+      } else {
         // update new password to the db
-        if (
-          user_id === decoded.user_id &&
-          decoded.purpose === 'FORGET_PASSWORD'
-        ) {
-          await Model.users.findByIdAndUpdate(
-            user_id,
-            {
-              password,
-            },
-            // eslint-disable-next-line no-unused-vars
-            (err, dbRes) => {
-              if (err) throw err;
-              // console.log(dbRes);
-            }
-          );
+        await Model.users.findByIdAndUpdate(
+          _id,
+          {
+            password,
+          },
+          // eslint-disable-next-line no-unused-vars
+          (err, dbRes) => {
+            if (err) throw err;
+            // console.log(dbRes);
+          }
+        );
 
-          // send success response
-          res.status(200).send({
-            success: true,
-            data: {
-              user_id,
-              message: 'your password changed Successfully',
-            },
-          });
-        } else {
-          // if invalid Token Credentials eg. Purpose or user_id
-          res.status(401).json({
-            success: false,
-            error: {
-              status: utils.statusCode[401].status,
-              name: utils.statusCode[401].name,
-              message: `Invalid sessionToken`,
-            },
-          });
-        }
-      } catch (err) {
-        // err if sessionToken is invalid
-        res.status(401).json({
-          success: false,
-          error: {
-            status: utils.statusCode[401].status,
-            name: utils.statusCode[401].name,
-            message: `invalid session token`,
+        // send success response
+        res.status(200).send({
+          success: true,
+          data: {
+            user_id: _id,
+            message: 'your password changed Successfully',
           },
         });
       }
     }
   },
 
-  update: async (req, res) => {
+  update: async (req, res, next) => {
     let errMessage = [];
     let errFlag = false;
 
@@ -389,24 +325,9 @@ module.exports = {
 
     // check error if exist then send error response
     if (errFlag) {
-      let err = new Error();
-      err.code = utils.statusCode[412].status;
-      err.name = utils.statusCode[412].name;
-      err.message = errMessage.join(' ');
-      throw err;
+      return next({ status: 412, message: errMessage.join(' ') });
     } else {
       // check user not already exist
-      await mongoose.connect(mongoURI, {
-        useNewUrlParser: true,
-        uri_decode_auth: true,
-      });
-
-      // Get the default connection
-      const db = mongoose.connection;
-
-      //Bind connection to error event (to get notification of connection statusCode)
-      db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-
       // validate sessionToken using jwt
       try {
         // validate sessionToken
@@ -464,14 +385,3 @@ module.exports = {
     }
   },
 };
-
-/**
- * ***********************************************
- * GLOBAL FUNCTIONS
- * ***********************************************
- */
-
-// eslint-disable-next-line no-unused-vars
-async function updatePasswordInCollection() {
-  return 0;
-}

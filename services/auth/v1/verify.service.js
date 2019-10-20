@@ -1,13 +1,11 @@
-const mongoose = require('mongoose');
 const moment = require('moment');
-const utils = require('../../../utils');
+// const utils = require('../../../utils');
 const Model = require('../../../models');
 const jwt = require('jsonwebtoken');
 // const utils = require('../../utils');
-const mongoURI = require('../../../config').mongoURI;
 
 module.exports = {
-  init: async (req, res) => {
+  init: async (req, res, next) => {
     let errMessage = [];
     let errFlag = false;
 
@@ -53,7 +51,7 @@ module.exports = {
       purpose = 'LOGIN';
     } else {
       purpose = purpose.toUpperCase();
-      console.log(`console logs: purpose`, purpose);
+      console.info(`console logs: purpose`, purpose);
       if (
         !(
           purpose === 'FORGET_PASSWORD' ||
@@ -72,23 +70,9 @@ module.exports = {
 
     // check error if exist then send error response
     if (errFlag) {
-      let err = new Error();
-      err.code = utils.statusCode[412].status;
-      err.name = utils.statusCode[412].name;
-      err.message = errMessage.join(' ');
-      throw err;
+      return next({ status: 412, message: errMessage.join(' ') });
     } else {
       // check user not already exist
-      await mongoose.connect(mongoURI, {
-        useNewUrlParser: true,
-        uri_decode_auth: true,
-      });
-
-      // Get the default connection
-      const db = mongoose.connection;
-
-      //Bind connection to error event (to get notification of connection statusCode)
-      db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
       let otpDetails;
       await Model.otps.findOne({ user_id, client_type }, (err, dbRes) => {
