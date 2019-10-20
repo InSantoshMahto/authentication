@@ -47,8 +47,8 @@ module.exports = {
         const otp = utils.otpGenerator(4);
 
         // send OTP
-        const brand = `ONSI`;
-        const domain = 'https://onsi.in';
+        const brand = process.env.BRAND;
+        const domain = process.env.DOMAIN;
         const message = `submit your otp to move towards next step.`;
 
         utils.email.otp(

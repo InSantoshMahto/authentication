@@ -251,13 +251,11 @@ module.exports = {
       // if type email then send otp to the email address
       if (otpDetails.type === 'EMAIL') {
         // send OTP
-        const brand = `ONSI`;
-        const domain = 'https://onsi.in';
+        const brand = process.env.BRAND;
+        const domain = process.env.DOMAIN;
         const message = `verify your account by submitting the otp given below.`;
         const userName =
-          userDetails && userDetails.userName
-            ? userDetails.userName
-            : 'resend user';
+          userDetails && userDetails.userName ? userDetails.userName : 'user';
 
         utils.email.otp(
           brand,
