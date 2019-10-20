@@ -1,8 +1,7 @@
 const moment = require('moment');
-// const utils = require('../../../utils');
 const Model = require('../../../models');
 const jwt = require('jsonwebtoken');
-// const utils = require('../../utils');
+const utils = require('../../../utils');
 
 module.exports = {
   init: async (req, res, next) => {
@@ -10,27 +9,24 @@ module.exports = {
     let errFlag = false;
 
     let { user_id, otp, type, purpose } = req.body;
-    let client_type = req.header('Client-Type');
+    let clientType = req.header('Client-Type');
 
     // check clientType existence
-    if (!client_type) {
+    if (!clientType) {
       errFlag = true;
-      errMessage.push('Client_Type header is required.');
+      errMessage.push('Client-Type header is required.');
     }
 
     // check Type existence
     if (!type) {
       errFlag = true;
       errMessage.push('type is required.');
-    } else if (
-      type.toUpperCase() !== 'EMAIL' &&
-      type.toUpperCase() !== 'MOBILE' &&
-      type.toUpperCase() !== 'BOTH'
-    ) {
-      errFlag = true;
-      errMessage.push('invalid type');
     } else {
       type = type.toUpperCase();
+      if (type !== 'EMAIL' && type !== 'MOBILE' && type !== 'BOTH') {
+        errFlag = true;
+        errMessage.push('invalid type');
+      }
     }
 
     // check user_id existence
@@ -46,12 +42,10 @@ module.exports = {
     }
 
     // decide purpose
-    console.log(`console logs: purpose`, purpose);
     if (!purpose) {
       purpose = 'LOGIN';
     } else {
       purpose = purpose.toUpperCase();
-      console.info(`console logs: purpose`, purpose);
       if (
         !(
           purpose === 'FORGET_PASSWORD' ||
@@ -75,11 +69,10 @@ module.exports = {
       // check user not already exist
 
       let otpDetails;
-      await Model.otps.findOne({ user_id, client_type }, (err, dbRes) => {
+      await Model.otps.findOne({ user_id, clientType }, (err, dbRes) => {
         if (err) throw err;
         otpDetails = dbRes;
       });
-      // console.log(`console logs: otpDetails`, otpDetails);
 
       if (!otpDetails) {
         res.status(400).json({
@@ -141,7 +134,7 @@ module.exports = {
           res.status(200).json({
             success: true,
             data: {
-              'Client-Type': client_type,
+              'Client-Type': clientType,
               user_id,
               sessionToken,
             },
@@ -156,13 +149,140 @@ module.exports = {
       }
     }
   },
+
   /**
    * reSendOtp
    * @description use to re send the existing otp.
    */
-  resendOtp: async (req, res) => {
+  resendOtp: async (req, res, next) => {
     // TODO: validate user info
-    res.send({ route: 'resend otp' });
+    let errMessage = [];
+    let errFlag = false;
+
+    let { user_id, type, purpose } = req.body;
+    let clientType = req.header('Client-Type');
+
+    // check clientType existence
+    if (!clientType) {
+      errFlag = true;
+      errMessage.push('Client-Type header is required.');
+    }
+
+    // check Type existence
+    if (!type) {
+      errFlag = true;
+      errMessage.push('type is required.');
+    } else {
+      type = type.toUpperCase();
+      if (type !== 'EMAIL' && type !== 'MOBILE' && type !== 'BOTH') {
+        errFlag = true;
+        errMessage.push('invalid type. i.e, receiver type');
+      }
+    }
+
+    // check user_id existence
+    if (!user_id) {
+      errFlag = true;
+      errMessage.push('user_id is required.');
+    }
+
+    // decide purpose
+    if (!purpose) {
+      purpose = 'LOGIN';
+    } else {
+      purpose = purpose.toUpperCase();
+      if (
+        !(
+          purpose === 'FORGET_PASSWORD' ||
+          purpose === 'CHANGE_PASSWORD' ||
+          purpose === 'EMAIL_VERIFICATION' ||
+          purpose === 'MOBILE_VERIFICATION' ||
+          purpose === 'ACCOUNT_ENABLING' ||
+          purpose === 'USER_ACTIVATION' ||
+          purpose === 'LOGIN'
+        )
+      ) {
+        errFlag = true;
+        errMessage.push('invalid verification purpose');
+      }
+    }
+
+    let otpDetails, userDetails, otp;
+    // check error if exist then send error response
+    if (errFlag) {
+      return next({ status: 412, message: errMessage.join(' ') });
+    } else {
+      // check user not already exist
+      await Model.otps.findOne(
+        { user_id, purpose, type, clientType },
+        (err, dbRes) => {
+          if (err) throw err;
+          otpDetails = dbRes;
+        }
+      );
+      // if otp found the send resend the otp
+      if (!otpDetails) {
+        // regenerate otp and send to the client
+
+        // generate otp
+        otp = utils.otpGenerator(4); // console.log(`generated otp:\t`, otp);
+
+        // get complete user details
+        await Model.users.findById(user_id, (err, dbRes) => {
+          if (err) throw err;
+          userDetails = dbRes;
+        });
+
+        // update on db
+        const otpEmail = new Model.otps({
+          otp,
+          user_id,
+          purpose: 'USER_ACTIVATION',
+          receiver: [userDetails.email],
+          type: 'EMAIL',
+        });
+
+        await otpEmail.save().then(dbRes => {
+          console.info('INFO: otp saved on DB.:\t', dbRes._id);
+          otpDetails = dbRes;
+        });
+      }
+
+      // if type email then send otp to the email address
+      if (otpDetails.type === 'EMAIL') {
+        // send OTP
+        const brand = `ONSI`;
+        const domain = 'https://onsi.in';
+        const message = `verify your account by submitting the otp given below.`;
+        const userName =
+          userDetails && userDetails.userName
+            ? userDetails.userName
+            : 'resend user';
+
+        utils.email.otp(
+          brand,
+          domain,
+          userName,
+          otpDetails.receiver[0],
+          message,
+          otpDetails.otp
+        );
+
+        res.send({
+          success: true,
+          data: {
+            user_id,
+            userName,
+            type: 'EMAIL',
+            message: 'otp has successfully resented.',
+          },
+        });
+      } else if (otpDetails.type === 'MOBILE') {
+        // TODO: implement mobile number otp send.
+      } else {
+        // TODO: implement mobile number & email both otp send.
+      }
+    }
   },
 };
 

@@ -5,13 +5,13 @@ module.exports = async (req, res, next) => {
   let errMessage = [];
   let errFlag = false;
 
-  let client_type = req.header('Client-Type');
+  let clientType = req.header('Client-Type');
   let authorizationToken = req.header('Authorization');
 
   // check clientType existence
-  if (!client_type) {
+  if (!clientType) {
     errFlag = true;
-    errMessage.push('Client_Type header is required.');
+    errMessage.push('Client-Type header is required.');
   }
 
   // check authorizationToken existence

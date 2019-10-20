@@ -9,7 +9,7 @@ const otps = new Schema({
   user_id: { type: Schema.Types.ObjectId },
   otp: { type: String, minlength: 4, maxlength: 8 },
   type: { type: Object, uppercase: true, trim: true, default: 'EMAIL' },
-  client_type: { type: String, uppercase: true, trim: true, default: 'WEB' },
+  clientType: { type: String, uppercase: true, trim: true, default: 'WEB' },
   receiver: { type: Array, default: [] },
   purpose: { type: String, default: 'login' },
   isValid: { type: Boolean, default: true },
@@ -47,6 +47,7 @@ const users = new Schema({
   isMobileVerified: { type: Boolean, default: false },
   isAccountVerify: { type: Boolean, default: false },
   isAccountStatus: { type: Boolean, default: false },
+  clientType: { type: String, uppercase: true, trim: true, default: 'WEB' },
   address: {
     type: Schema.Types.Mixed,
     lowercase: true,

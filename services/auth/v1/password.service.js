@@ -10,12 +10,12 @@ module.exports = {
     let errFlag = false;
 
     let { userName } = req.body;
-    let client_type = req.header('Client-Type');
+    let clientType = req.header('Client-Type');
 
     // check clientType existence
-    if (!client_type) {
+    if (!clientType) {
       errFlag = true;
-      errMessage.push('Client_Type header is required.');
+      errMessage.push('Client-Type header is required.');
     }
 
     // check userName existence
@@ -92,11 +92,11 @@ module.exports = {
     let errFlag = false;
     let { _id } = req.userDetails;
     let { password, oldPassword } = req.body;
-    let client_type = req.header('Client-Type');
+    let clientType = req.header('Client-Type');
     // check clientType existence
-    if (!client_type) {
+    if (!clientType) {
       errFlag = true;
-      errMessage.push('Client_Type header is required.');
+      errMessage.push('Client-Type header is required.');
     }
 
     // check password existence
@@ -224,10 +224,10 @@ module.exports = {
     let errFlag = false;
 
     let { user_id, password, sessionToken } = req.body;
-    let client_type = req.header('Client-Type');
+    let clientType = req.header('Client-Type');
 
     // check clientType existence
-    if (!client_type) {
+    if (!clientType) {
       errFlag = true;
       errMessage.push('Client-Type header is required.');
     }

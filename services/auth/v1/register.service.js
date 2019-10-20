@@ -22,7 +22,7 @@ module.exports = {
       password,
     } = req.body;
 
-    let client_type = req.header('Client-Type');
+    let clientType = req.header('Client-Type');
 
     // formating the data
     middleName = middleName ? middleName : null;
@@ -31,9 +31,9 @@ module.exports = {
     lastName = lastName ? lastName : null;
 
     // check clientType existence
-    if (!client_type) {
+    if (!clientType) {
       errFlag = true;
-      errMessage.push('Client_Type header is required.');
+      errMessage.push('Client-Type header is required.');
     }
 
     // privilegeType validation
@@ -240,13 +240,14 @@ module.exports = {
           gender,
           dob,
           hash,
+          clientType,
           remark,
         });
         // executing query into db
         newUser
           .save()
           .then(dbRes => {
-            // console.log('successfully inserted:', dbRes);
+            console.log('successfully inserted new user:', dbRes._id);
             const user_id = dbRes.id;
 
             // generate otp
